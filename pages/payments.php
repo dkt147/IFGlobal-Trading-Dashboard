@@ -123,6 +123,13 @@ require_once '../includes/header.php';
     <form method="POST">
       <input type="hidden" name="action" value="add">
       <div class="modal-body">
+        <div class="form-group" style="margin-bottom: 15px; border: 2px dashed #007bff; padding: 20px; text-align: center; border-radius: 8px; background: #f8f9fa;">
+          <label for="receipt_upload" style="cursor:pointer; font-weight:bold; color:#007bff; display:block; margin:0;">
+            <i class="fas fa-upload" style="margin-right:8px; font-size:1.2em;"></i> Upload Receipt to Auto-fill
+          </label>
+          <input type="file" id="receipt_upload" accept="image/*" style="display:none;" onchange="processReceipt(this)">
+          <div id="receipt_status" style="margin-top: 10px; font-size: 0.9em; color: #666;"></div>
+        </div>
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label">Date *</label>
@@ -184,6 +191,238 @@ require_once '../includes/header.php';
 function toggleParty(type) {
   document.getElementById('cust_group').style.display = type === 'customer' ? '' : 'none';
   document.getElementById('supp_group').style.display = type === 'supplier' ? '' : 'none';
+}
+
+async function processReceipt(input) {
+  if (!input.files || input.files.length === 0) return;
+  const file = input.files[0];
+  const statusDiv = document.getElementById('receipt_status');
+  
+  statusDiv.innerHTML = '<span style="color:#f39c12"><i class="fas fa-spinner fa-spin"></i> Processing receipt, please wait...</span>';
+  
+  try {
+    const formData = new FormData();
+    formData.append('receipt', file);
+
+    const endpoint = new URL('ocr_upload.php', window.location.href).href;
+    const response = await fetch(endpoint, { method: 'POST', body: formData });
+
+    let result = null;
+    try {
+      result = await response.json();
+    } catch (parseError) {
+      throw new Error(`OCR upload failed with status ${response.status}. Server response was not valid JSON.`);
+    }
+
+    if (!response.ok || !result.success) {
+      throw new Error(result?.error || `HTTP ${response.status}`);
+    }
+
+    const text = result.text || '';
+    console.log("OCR Text:", text);
+
+    // ── Normalize Text ──────────────────────────────────────────────
+    const rawText = text.replace(/[^\x00-\x7F\r\n]+/g, ' ');
+    const normalizedText = rawText
+      .replace(/\r\n/g, '\n')
+      .replace(/[\t ]+/g, ' ')
+      .replace(/-{2,}/g, '-')
+      .replace(/={2,}/g, '=')
+      .replace(/[\*]+/g, '*')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+
+    const lines = normalizedText
+      .split(/\r?\n/)
+      .map(line => line.trim().replace(/[\|\u2014\u2013]+/g, ' '))
+      .filter(line => line.length > 0 && /[A-Za-z0-9]/.test(line));
+
+    function normalizeLine(line) {
+      return line
+        .replace(/[\u2018\u2019\u201C\u201D]/g, '"')
+        .replace(/[:;]+/g, ':')
+        .replace(/\s*-\s*/g, ' - ')
+        .replace(/\s*\|\s*/g, ' | ')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+    }
+
+    const cleanLines = lines.map(normalizeLine).filter(line => line.length > 0);
+    const textForDate = cleanLines.join(' ');
+
+    // ── 1. Extract Amount (Smart) ────────────────────────────────────
+    let maxAmount = 0;
+    let amountLine = null;
+
+    const priorityHints = [
+      ['grand total', 'net total', 'net payable', 'net amount', 'total amount', 'total due', 'balance due', 'amount due', 'payable amount'],
+      ['total', 'subtotal', 'sub total'],
+      ['deposit', 'received', 'paid', 'cash'],
+      ['amount', 'rs', 'pkr', 'rupees']
+    ];
+
+    function isLikelyPhoneOrAccount(line) {
+      return /\b\d{10,}\b/.test(line.replace(/[\s\-]/g, ''));
+    }
+
+   function extractNumbersFromLine(line) {
+  // Remove S.No patterns like "1." or "1)" at start
+  let cleaned = line.replace(/^\d{1,3}[\.\)]\s*/, '');
+  // Remove commas from numbers
+  cleaned = cleaned.replace(/,/g, '');
+  let matches = cleaned.match(/\b\d+(\.\d{1,2})?\b/g);
+  if (!matches) return [];
+  return matches
+    .map(m => parseFloat(m))
+    .filter(n => !isNaN(n) && n >= 10 && n <= 9999999)
+    // Skip numbers that look like dates (1-31) or qty (1-9) UNLESS no other number exists
+    .filter(n => n >= 100 || matches.length === 1);
+}
+
+    let found = false;
+for (let hintGroup of priorityHints) {
+  if (found) break;
+  for (let line of cleanLines) {
+    if (isLikelyPhoneOrAccount(line)) continue;
+    const lower = line.toLowerCase();
+    if (hintGroup.some(hint => lower.includes(hint))) {
+      const nums = extractNumbersFromLine(line);
+      if (nums.length > 0) {
+        // Last number on the line = amount (not S.No or qty)
+        const candidate = nums[nums.length - 1];
+        if (candidate > maxAmount && candidate >= 10) { // min 10 rupees
+          maxAmount = candidate;
+          amountLine = line;
+          found = true;
+        }
+      }
+    }
+  }
+}
+
+    // Fallback: scan all lines
+    if (maxAmount === 0) {
+  for (let line of cleanLines) {
+    if (isLikelyPhoneOrAccount(line)) continue;
+    if (/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(line)) continue;
+    if (/^\d{1,3}[\.\)]\s/.test(line)) continue; // Skip S.No lines
+    const nums = extractNumbersFromLine(line);
+    if (nums.length === 0) continue;
+    const candidate = nums[nums.length - 1]; // Last number = amount
+    if (candidate > maxAmount) {
+      maxAmount = candidate;
+      amountLine = line;
+    }
+  }
+}
+
+    if (maxAmount > 0) {
+      document.querySelector('input[name="amount"]').value = maxAmount.toFixed(2);
+    }
+
+    // ── 2. Extract Date ──────────────────────────────────────────────
+    const dateRegexes = [
+      { regex: /(?:date|dated|dt\.?|on)\s*[:\-]?\s*(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/i, format: 'DMY' },
+      { regex: /(?:date|dated|dt\.?|on)\s*[:\-]?\s*(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})/i, format: 'YMD' },
+      { regex: /(?:date|dated|dt\.?|on)\s*[:\-]?\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})/i, format: 'MDY_STR' },
+      { regex: /(?:date|dated|dt\.?|on)\s*[:\-]?\s*(\d{1,2})(?:st|nd|rd|th)?\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*,?\s*(\d{4})/i, format: 'DMY_STR' },
+      { regex: /\b(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})\b/, format: 'YMD' },
+      { regex: /\b(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})\b/, format: 'DMY' },
+      { regex: /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})\b/i, format: 'MDY_STR' },
+      { regex: /\b(\d{1,2})(?:st|nd|rd|th)?\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*,?\s*(\d{4})\b/i, format: 'DMY_STR' }
+    ];
+
+    let finalDate = null;
+    let dateTextCandidate = cleanLines.find(line => /(?:date|dated|dt\.?|on)\b/i.test(line) && /\d{1,2}[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/.test(line));
+    if (!dateTextCandidate) dateTextCandidate = textForDate;
+
+    for (let rule of dateRegexes) {
+      let m = dateTextCandidate.match(rule.regex);
+      if (m) {
+        let tempDate = null;
+        if (rule.format === 'YMD') {
+          tempDate = new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
+        } else if (rule.format === 'DMY') {
+          let p1 = parseInt(m[1]), p2 = parseInt(m[2]), y = parseInt(m[3]);
+          if (y < 100) y += 2000;
+          tempDate = p1 > 12 ? new Date(y, p2-1, p1) : new Date(y, p2-1, p1);
+        } else if (rule.format === 'MDY_STR') {
+          tempDate = new Date(`${m[1]} ${m[2]}, ${m[3]}`);
+        } else if (rule.format === 'DMY_STR') {
+          tempDate = new Date(`${m[2]} ${m[1]}, ${m[3]}`);
+        }
+        if (tempDate && !isNaN(tempDate.getTime())) {
+          let y = tempDate.getFullYear();
+          if (y >= 2000 && y <= 2100) { finalDate = tempDate; break; }
+        }
+      }
+    }
+
+    if (finalDate) {
+      let yyyy = finalDate.getFullYear();
+      let mm = String(finalDate.getMonth() + 1).padStart(2, '0');
+      let dd = String(finalDate.getDate()).padStart(2, '0');
+      document.querySelector('input[name="payment_date"]').value = `${yyyy}-${mm}-${dd}`;
+    }
+
+    // ── 3. Extract Party Name ────────────────────────────────────────
+    let customerSelect = document.querySelector('select[name="customer_id"]');
+    let supplierSelect = document.querySelector('select[name="supplier_id"]');
+
+    function findMatch(selectObj) {
+      for (let i = 0; i < selectObj.options.length; i++) {
+        let opt = selectObj.options[i];
+        if (!opt.value) continue;
+        let words = opt.text.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+        let matches = words.filter(w => text.toLowerCase().includes(w)).length;
+        if (matches > 0 && matches >= words.length / 2) return opt.value;
+      }
+      return null;
+    }
+
+    let cMatch = findMatch(customerSelect);
+    if (cMatch) {
+      document.getElementById('pt_cust').checked = true;
+      toggleParty('customer');
+      customerSelect.value = cMatch;
+    } else {
+      let sMatch = findMatch(supplierSelect);
+      if (sMatch) {
+        document.getElementById('pt_supp').checked = true;
+        toggleParty('supplier');
+        supplierSelect.value = sMatch;
+      }
+    }
+
+    // ── 4. Payment Type ──────────────────────────────────────────────
+    let typeSelect = document.querySelector('select[name="payment_type"]');
+    typeSelect.value = (text.toLowerCase().includes('refund') || text.toLowerCase().includes('return')) ? 'return' : 'payment';
+
+    // ── 5. Note ──────────────────────────────────────────────────────
+    let noteLines = ['Auto-filled from receipt:'];
+    if (maxAmount > 0) noteLines.push(`Amount: ${maxAmount.toFixed(2)}` + (amountLine ? `  (${amountLine})` : ''));
+    if (finalDate) {
+      let yyyy = finalDate.getFullYear();
+      let mm = String(finalDate.getMonth()+1).padStart(2,'0');
+      let dd = String(finalDate.getDate()).padStart(2,'0');
+      noteLines.push(`Date: ${dd}/${mm}/${yyyy}`);
+    }
+    noteLines.push('', ...cleanLines.slice(0, 12));
+
+    let noteText = noteLines.join('\n');
+    let noteElem = document.querySelector('textarea[name="note"]');
+    noteElem.value = noteText;
+    if (typeof $ !== 'undefined' && $(noteElem).summernote) {
+      $(noteElem).summernote('code', noteText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br/>'));
+    }
+
+    statusDiv.innerHTML = '<span style="color:#28a745"><i class="fas fa-check-circle"></i> Receipt processed! Please verify the values.</span>';
+
+  } catch (err) {
+    console.error(err);
+    statusDiv.innerHTML = `<span style="color:#dc3545"><i class="fas fa-times-circle"></i> ${err?.message || 'Error processing receipt.'}</span>`;
+    input.value = '';
+  }
 }
 </script>
 

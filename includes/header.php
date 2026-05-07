@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= $pageTitle ?? 'IF Global Sourcing' ?></title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/textile_app/css/app.css">
+<link rel="stylesheet" href="/Global-Sourcing/css/app.css">
 <!-- Summernote Lite Rich Text Editor -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
@@ -26,7 +26,7 @@
       });
   });
 </script>
-<script src="/textile_app/js/app.js"></script>
+<script src="/Global-Sourcing/js/app.js"></script>
 </head>
 <body>
 
@@ -40,34 +40,34 @@
   </div>
 
   <div class="nav-section-label">Main</div>
-  <a href="/textile_app/pages/dashboard.php" class="nav-link <?= ($activePage==='dashboard')?'active':'' ?>">
+  <a href="/Global-Sourcing/pages/dashboard.php" class="nav-link <?= ($activePage==='dashboard')?'active':'' ?>">
     <span class="nav-icon">◈</span> Dashboard
   </a>
 
   <div class="nav-section-label">Transactions</div>
-  <a href="/textile_app/pages/delivery_orders.php" class="nav-link <?= ($activePage==='delivery')?'active':'' ?>">
+  <a href="/Global-Sourcing/pages/delivery_orders.php" class="nav-link <?= ($activePage==='delivery')?'active':'' ?>">
     <span class="nav-icon">◎</span> Delivery Orders
   </a>
-  <a href="/textile_app/pages/payments.php" class="nav-link <?= ($activePage==='payments')?'active':'' ?>">
+  <a href="/Global-Sourcing/pages/payments.php" class="nav-link <?= ($activePage==='payments')?'active':'' ?>">
     <span class="nav-icon">◇</span> Payments
   </a>
 
   <div class="nav-section-label">Master Data</div>
-  <a href="/textile_app/pages/contracts.php" class="nav-link <?= ($activePage==='contracts')?'active':'' ?>">
+  <a href="/Global-Sourcing/pages/contracts.php" class="nav-link <?= ($activePage==='contracts')?'active':'' ?>">
     <span class="nav-icon">▣</span> Contracts
   </a>
-  <a href="/textile_app/pages/suppliers.php" class="nav-link <?= ($activePage==='suppliers')?'active':'' ?>">
+  <a href="/Global-Sourcing/pages/suppliers.php" class="nav-link <?= ($activePage==='suppliers')?'active':'' ?>">
     <span class="nav-icon">△</span> Suppliers
   </a>
-  <a href="/textile_app/pages/customers.php" class="nav-link <?= ($activePage==='customers')?'active':'' ?>">
+  <a href="/Global-Sourcing/pages/customers.php" class="nav-link <?= ($activePage==='customers')?'active':'' ?>">
     <span class="nav-icon">○</span> Customers
   </a>
 
   <div class="nav-section-label">Reports</div>
-  <a href="/textile_app/pages/ledger.php" class="nav-link <?= ($activePage==='ledger')?'active':'' ?>">
+  <a href="/Global-Sourcing/pages/ledger.php" class="nav-link <?= ($activePage==='ledger')?'active':'' ?>">
     <span class="nav-icon">≡</span> Ledger
   </a>
-  <a href="/textile_app/pages/commission_pdf.php" class="nav-link <?= ($activePage==='commission')?'active':'' ?>">
+  <a href="/Global-Sourcing/pages/commission_pdf.php" class="nav-link <?= ($activePage==='commission')?'active':'' ?>">
     <span class="nav-icon">◉</span> Commission PDF
   </a>
 

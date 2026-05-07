@@ -1,6 +1,6 @@
   </div><!-- .page-content -->
 </div><!-- .main-wrap -->
 
-<script src="/textile_app/js/app.js"></script>
+<script src="/Global-Sourcing/js/app.js"></script>
 </body>
 </html>
