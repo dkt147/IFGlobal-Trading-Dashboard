@@ -67,7 +67,7 @@ require_once '../includes/header.php';
           <td><?= date('d/m/Y', strtotime($row['contract_date'])) ?></td>
           <td><?= htmlspecialchars($row['supplier_name'] ?? '—') ?></td>
           <td><?= htmlspecialchars($row['customer_name'] ?? '—') ?></td>
-          <td><?= htmlspecialchars($row['description'] ?? '—') ?></td>
+          <td><?= strip_tags($row['description'] ?? '—') ?></td>
           <td class="td-num"><?= number_format($row['qty'], 0) ?></td>
           <td><?= htmlspecialchars($row['qty_unit']) ?></td>
           <td class="td-num"><?= number_format($row['rate'], 2) ?></td>
@@ -79,7 +79,7 @@ require_once '../includes/header.php';
               <span class="badge badge-pct">PKR <?= number_format($row['commission_value'], 2) ?>/unit</span>
             <?php endif; ?>
           </td>
-          <td><?= htmlspecialchars($row['note'] ?? '—') ?></td>
+          <td><?= strip_tags($row['note'] ?? '—') ?: '—' ?></td>
           <td>
             <form method="POST" style="display:inline" onsubmit="return confirm('Delete contract?')">
               <input type="hidden" name="action" value="delete">
@@ -139,7 +139,7 @@ require_once '../includes/header.php';
             <label class="form-label">Qty Unit</label>
             <select name="qty_unit" class="form-control">
               <option value="METER">METER</option>
-              <option value="YARD">YARD</option>
+              <option value="YARD">YARN</option>
               <option value="KG">KG</option>
               <option value="PCS">PCS</option>
             </select>

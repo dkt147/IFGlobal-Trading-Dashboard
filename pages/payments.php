@@ -11,16 +11,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'add') {
         $date         = $_POST['payment_date'];
-        $payer_type   = $_POST['payer_type'];
         $supplier_id  = $_POST['supplier_id'] ?: null;
         $customer_id  = $_POST['customer_id'] ?: null;
-        $payment_type = $_POST['payment_type'];
-        $amount       = (float)$_POST['amount'];
-        $note         = trim($_POST['note']);
-        $stmt = $conn->prepare("INSERT INTO payments (payment_date,supplier_id,customer_id,payer_type,payment_type,amount,note) VALUES (?,?,?,?,?,?,?)");
-        $stmt->bind_param("siissds", $date,$supplier_id,$customer_id,$payer_type,$payment_type,$amount,$note);
-        $stmt->execute();
-        $msg = 'success:Payment recorded.';
+        
+        // Validate that at least one party is selected
+        if (!$customer_id && !$supplier_id) {
+            $msg = 'error:Please select at least one party (Customer or Supplier).';
+        } else {
+            // Determine payer_type based on which party is selected
+            if ($customer_id && $supplier_id) {
+                $payer_type = 'both';
+            } elseif ($customer_id) {
+                $payer_type = 'customer';
+            } else {
+                $payer_type = 'supplier';
+            }
+            
+            if (empty($msg)) {
+                $payment_type = $_POST['payment_type'];
+                $amount       = (float)$_POST['amount'];
+                $note         = trim($_POST['note']);
+                $contract_id  = $_POST['contract_id'] ?: null;
+                $stmt = $conn->prepare("INSERT INTO payments (payment_date,supplier_id,customer_id,payer_type,payment_type,amount,note,contract_id) VALUES (?,?,?,?,?,?,?,?)");
+                $stmt->bind_param("siissdsi", $date,$supplier_id,$customer_id,$payer_type,$payment_type,$amount,$note,$contract_id);
+                $stmt->execute();
+                $msg = 'success:Payment recorded.';
+            }
+        }
     } elseif ($action === 'delete') {
         $id = (int)$_POST['id'];
         $conn->query("DELETE FROM payments WHERE id=$id");
@@ -46,6 +63,8 @@ $totals = $conn->query("SELECT SUM(amount) as total FROM payments p $where")->fe
 
 $suppliers = $conn->query("SELECT id, name FROM suppliers ORDER BY name");
 $customers = $conn->query("SELECT id, name FROM customers ORDER BY name");
+$contracts = $conn->query("SELECT contracts.id, contracts.contract_date, s.name as supplier_name, c.name as customer_name, contracts.description, contracts.qty, contracts.qty_unit, contracts.rate FROM contracts LEFT JOIN customers c ON contracts.customer_id = c.id LEFT JOIN suppliers s ON contracts.supplier_id = s.id ORDER BY contracts.contract_date DESC");
+
 
 require_once '../includes/header.php';
 [$mtype, $mtext] = $msg ? explode(':', $msg, 2) : ['',''];
@@ -65,6 +84,7 @@ require_once '../includes/header.php';
     <option value="">All Parties</option>
     <option value="customer" <?= $filter_payer==='customer'?'selected':'' ?>>Customers</option>
     <option value="supplier" <?= $filter_payer==='supplier'?'selected':'' ?>>Suppliers</option>
+    <option value="both" <?= $filter_payer==='both'?'selected':'' ?>>Both</option>
   </select>
   <select name="type" class="form-control" onchange="this.form.submit()">
     <option value="">All Types</option>
@@ -86,12 +106,18 @@ require_once '../includes/header.php';
           <td><?= $i++ ?></td>
           <td><?= date('d/m/Y', strtotime($row['payment_date'])) ?></td>
           <td class="td-bold">
-            <?= htmlspecialchars($row['payer_type'] === 'customer' ? ($row['customer_name'] ?? '—') : ($row['supplier_name'] ?? '—')) ?>
+            <?php 
+              if ($row['payer_type'] === 'both') {
+                  echo htmlspecialchars(($row['customer_name'] ?? '—') . ' & ' . ($row['supplier_name'] ?? '—'));
+              } else {
+                  echo htmlspecialchars($row['payer_type'] === 'customer' ? ($row['customer_name'] ?? '—') : ($row['supplier_name'] ?? '—'));
+              }
+            ?>
           </td>
-          <td><span class="badge badge-<?= $row['payer_type'] === 'customer' ? 'send' : 'pct' ?>"><?= $row['payer_type'] ?></span></td>
+          <td><span class="badge badge-<?= $row['payer_type'] === 'customer' ? 'send' : ($row['payer_type'] === 'supplier' ? 'pct' : 'primary') ?>"><?= ucfirst($row['payer_type']) ?></span></td>
           <td class="td-num"><?= number_format($row['amount'], 2) ?></td>
           <td><span class="badge badge-<?= $row['payment_type'] === 'payment' ? 'payment' : 'return' ?>"><?= $row['payment_type'] ?></span></td>
-          <td><?= htmlspecialchars($row['note'] ?? '—') ?></td>
+          <td><?= strip_tags($row['note'] ?? '—') ?: '—' ?></td>
           <td>
             <form method="POST" style="display:inline" onsubmit="return confirm('Delete payment?')">
               <input type="hidden" name="action" value="delete">
@@ -142,16 +168,7 @@ require_once '../includes/header.php';
               <option value="return">Return Payment</option>
             </select>
           </div>
-          <div class="form-group" style="grid-column:1/-1">
-            <label class="form-label">Party Type *</label>
-            <div class="comm-toggle">
-              <input type="radio" name="payer_type" id="pt_cust" value="customer" checked onchange="toggleParty('customer')">
-              <label for="pt_cust">Customer</label>
-              <input type="radio" name="payer_type" id="pt_supp" value="supplier" onchange="toggleParty('supplier')">
-              <label for="pt_supp">Supplier</label>
-            </div>
-          </div>
-          <div class="form-group" id="cust_group" style="grid-column:1/-1">
+          <div class="form-group">
             <label class="form-label">Customer</label>
             <select name="customer_id" class="form-control">
               <option value="">— Select Customer —</option>
@@ -160,12 +177,30 @@ require_once '../includes/header.php';
               <?php endwhile; ?>
             </select>
           </div>
-          <div class="form-group" id="supp_group" style="display:none; grid-column:1/-1">
+          <div class="form-group">
             <label class="form-label">Supplier</label>
             <select name="supplier_id" class="form-control">
               <option value="">— Select Supplier —</option>
               <?php $suppliers->data_seek(0); while ($s = $suppliers->fetch_assoc()): ?>
                 <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></option>
+              <?php endwhile; ?>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label">Link Contract</label>
+            <select name="contract_id" class="form-control">
+              <option value="">— Select Contract (Optional) —</option>
+              <?php $contracts->data_seek(0); while ($ct = $contracts->fetch_assoc()): ?>
+                <?php 
+                  $label = date('d/m/Y', strtotime($ct['contract_date'])) . ' | ' .
+                           ($ct['supplier_name'] ?: '—') . ' | ' .
+                           ($ct['customer_name'] ?: '—') . ' | ' .
+                           (strip_tags($ct['description'] ?? '') ?: '—') . ' | ' .
+                           (float)$ct['qty'] . ' ' .
+                           ($ct['qty_unit'] ?: 'METER') . ' | Rs ' .
+                           (float)$ct['rate'];
+                ?>
+                <option value="<?= $ct['id'] ?>">Contract #<?= $ct['id'] ?> - <?= htmlspecialchars($label) ?></option>
               <?php endwhile; ?>
             </select>
           </div>
@@ -188,11 +223,6 @@ require_once '../includes/header.php';
 </div>
 
 <script>
-function toggleParty(type) {
-  document.getElementById('cust_group').style.display = type === 'customer' ? '' : 'none';
-  document.getElementById('supp_group').style.display = type === 'supplier' ? '' : 'none';
-}
-
 async function processReceipt(input) {
   if (!input.files || input.files.length === 0) return;
   const file = input.files[0];
@@ -424,6 +454,18 @@ for (let hintGroup of priorityHints) {
     input.value = '';
   }
 }
+
+// Form validation before submission
+document.querySelector('#addModal form').addEventListener('submit', function(e) {
+  const customerId = document.querySelector('select[name="customer_id"]').value;
+  const supplierId = document.querySelector('select[name="supplier_id"]').value;
+  
+  if (!customerId && !supplierId) {
+    e.preventDefault();
+    alert('Please select at least one party (Customer or Supplier).');
+    return false;
+  }
+});
 </script>
 
 <?php require_once '../includes/footer.php'; ?>

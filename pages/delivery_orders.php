@@ -52,7 +52,7 @@ $totals = $conn->query("SELECT SUM(qty) as tqty, SUM(debit) as tdebit FROM deliv
 
 $suppliers = $conn->query("SELECT id, name FROM suppliers ORDER BY name");
 $customers = $conn->query("SELECT id, name FROM customers ORDER BY name");
-$contracts = $conn->query("SELECT id, description, qty, rate FROM contracts ORDER BY contract_date DESC");
+$contracts = $conn->query("SELECT contracts.id, contracts.contract_date, s.name as supplier_name, c.name as customer_name, contracts.description, contracts.qty, contracts.qty_unit, contracts.rate FROM contracts LEFT JOIN customers c ON contracts.customer_id = c.id LEFT JOIN suppliers s ON contracts.supplier_id = s.id ORDER BY contracts.contract_date DESC");
 
 require_once '../includes/header.php';
 [$mtype, $mtext] = $msg ? explode(':', $msg, 2) : ['',''];
@@ -103,7 +103,7 @@ require_once '../includes/header.php';
           <td><?= date('d/m/Y', strtotime($row['do_date'])) ?></td>
           <td><?= htmlspecialchars($row['supplier_name'] ?? '—') ?></td>
           <td><?= htmlspecialchars($row['customer_name'] ?? '—') ?></td>
-          <td><?= htmlspecialchars($row['description'] ?? $row['contract_desc'] ?? '—') ?></td>
+          <td><?= strip_tags($row['description'] ?? $row['contract_desc'] ?? '—') ?></td>
           <td class="td-num"><?= number_format($row['qty'], 2) ?></td>
           <td class="td-num"><?= number_format($row['rate'], 2) ?></td>
           <td class="td-num"><?= number_format($row['debit'], 2) ?></td>
@@ -176,8 +176,17 @@ require_once '../includes/header.php';
             <select name="contract_id" class="form-control" id="contract_select" onchange="fillFromContract(this)">
               <option value="">— Select Contract —</option>
               <?php $contracts->data_seek(0); while ($ct = $contracts->fetch_assoc()): ?>
-                <option value="<?= $ct['id'] ?>" data-qty="<?= $ct['qty'] ?>" data-rate="<?= $ct['rate'] ?>" data-desc="<?= htmlspecialchars($ct['description']) ?>">
-                  <?= htmlspecialchars($ct['description']) ?> (Qty: <?= number_format($ct['qty'],0) ?> @ <?= $ct['rate'] ?>)
+                <?php 
+                  $label = date('d/m/Y', strtotime($ct['contract_date'])) . ' | ' .
+                           ($ct['supplier_name'] ?: '—') . ' | ' .
+                           ($ct['customer_name'] ?: '—') . ' | ' .
+                           (strip_tags($ct['description'] ?? '') ?: '—') . ' | ' .
+                           (float)$ct['qty'] . ' ' .
+                           ($ct['qty_unit'] ?: 'METER') . ' | Rs ' .
+                           (float)$ct['rate'];
+                ?>
+                <option value="<?= $ct['id'] ?>" data-qty="<?= $ct['qty'] ?>" data-rate="<?= $ct['rate'] ?>" data-desc="<?= htmlspecialchars($ct['description'] ?? '') ?>">
+                  Contract #<?= $ct['id'] ?> - <?= htmlspecialchars($label) ?>
                 </option>
               <?php endwhile; ?>
             </select>

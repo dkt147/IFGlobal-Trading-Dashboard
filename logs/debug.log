@@ -578,3 +578,367 @@
 [2026-05-06 02:19:25] Password verification SUCCESS | {"owner_id":1}
 [2026-05-06 02:19:25] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
 [2026-05-06 02:19:25] Database connection SUCCESS
+[2026-05-06 21:21:24] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:21:24] Database connection SUCCESS
+[2026-05-06 21:21:25] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:21:25] Database connection SUCCESS
+[2026-05-06 21:22:00] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:22:00] Database connection SUCCESS
+[2026-05-06 21:27:48] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:27:48] Database connection SUCCESS
+[2026-05-06 21:27:51] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:27:51] Database connection SUCCESS
+[2026-05-06 21:29:23] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:29:23] Database connection SUCCESS
+[2026-05-06 21:29:23] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:29:23] Database connection SUCCESS
+[2026-05-06 21:29:24] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:29:24] Database connection SUCCESS
+[2026-05-06 21:29:24] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:29:24] Database connection SUCCESS
+[2026-05-06 21:29:24] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:29:24] Database connection SUCCESS
+[2026-05-06 21:30:27] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:30:27] Database connection SUCCESS
+[2026-05-06 21:30:39] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:30:39] Database connection SUCCESS
+[2026-05-06 21:30:48] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:30:48] Database connection SUCCESS
+[2026-05-06 21:30:48] Login attempt | {"username":"admin"}
+[2026-05-06 21:30:48] Query executed | {"owner_found":true}
+[2026-05-06 21:30:48] Owner record found | {"id":1,"username":"admin"}
+[2026-05-06 21:30:48] Password verification SUCCESS | {"owner_id":1}
+[2026-05-06 21:30:48] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:30:48] Database connection SUCCESS
+[2026-05-06 21:31:32] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:31:32] Database connection SUCCESS
+[2026-05-06 21:31:34] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:31:34] Database connection SUCCESS
+[2026-05-06 21:31:35] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:31:35] Database connection SUCCESS
+[2026-05-06 21:31:36] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:31:36] Database connection SUCCESS
+[2026-05-06 21:31:37] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:31:37] Database connection SUCCESS
+[2026-05-06 21:31:38] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:31:38] Database connection SUCCESS
+[2026-05-06 21:31:39] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:31:39] Database connection SUCCESS
+[2026-05-06 21:31:41] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:31:41] Database connection SUCCESS
+[2026-05-06 21:31:42] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:31:42] Database connection SUCCESS
+[2026-05-06 21:31:46] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:31:46] Database connection SUCCESS
+[2026-05-06 21:32:46] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:32:46] Database connection SUCCESS
+[2026-05-06 21:32:48] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:32:48] Database connection SUCCESS
+[2026-05-06 21:32:49] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:32:49] Database connection SUCCESS
+[2026-05-06 21:32:51] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:32:51] Database connection SUCCESS
+[2026-05-06 21:41:02] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:41:02] Database connection SUCCESS
+[2026-05-06 21:42:07] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:42:07] Database connection SUCCESS
+[2026-05-06 21:44:12] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:44:12] Database connection SUCCESS
+[2026-05-06 21:44:40] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:44:40] Database connection SUCCESS
+[2026-05-06 21:46:17] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:46:17] Database connection SUCCESS
+[2026-05-06 21:55:15] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 21:55:15] Database connection SUCCESS
+[2026-05-06 22:07:48] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:07:48] Database connection SUCCESS
+[2026-05-06 22:08:39] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:08:39] Database connection SUCCESS
+[2026-05-06 22:08:48] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:08:48] Database connection SUCCESS
+[2026-05-06 22:10:54] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:10:54] Database connection SUCCESS
+[2026-05-06 22:11:19] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:11:19] Database connection SUCCESS
+[2026-05-06 22:11:48] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:11:48] Database connection SUCCESS
+[2026-05-06 22:12:11] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:12:11] Database connection SUCCESS
+[2026-05-06 22:14:53] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:14:53] Database connection SUCCESS
+[2026-05-06 22:15:13] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:15:13] Database connection SUCCESS
+[2026-05-06 22:15:34] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:15:34] Database connection SUCCESS
+[2026-05-06 22:16:05] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:16:05] Database connection SUCCESS
+[2026-05-06 22:18:52] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:18:52] Database connection SUCCESS
+[2026-05-06 22:24:27] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:24:27] Database connection SUCCESS
+[2026-05-06 22:24:41] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:24:41] Database connection SUCCESS
+[2026-05-06 22:28:59] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:28:59] Database connection SUCCESS
+[2026-05-06 22:29:18] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:29:18] Database connection SUCCESS
+[2026-05-06 22:29:45] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:29:45] Database connection SUCCESS
+[2026-05-06 22:29:58] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:29:58] Database connection SUCCESS
+[2026-05-06 22:32:53] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:32:53] Database connection SUCCESS
+[2026-05-06 22:41:50] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:41:50] Database connection SUCCESS
+[2026-05-06 22:41:57] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:41:57] Database connection SUCCESS
+[2026-05-06 22:43:51] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:43:51] Database connection SUCCESS
+[2026-05-06 22:45:33] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:45:33] Database connection SUCCESS
+[2026-05-06 22:45:53] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:45:53] Database connection SUCCESS
+[2026-05-06 22:48:15] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:48:15] Database connection SUCCESS
+[2026-05-06 22:50:10] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:50:10] Database connection SUCCESS
+[2026-05-06 22:52:10] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:52:10] Database connection SUCCESS
+[2026-05-06 22:52:22] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:52:22] Database connection SUCCESS
+[2026-05-06 22:54:40] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:54:40] Database connection SUCCESS
+[2026-05-06 22:55:13] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 22:55:13] Database connection SUCCESS
+[2026-05-06 23:10:58] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:10:58] Database connection SUCCESS
+[2026-05-06 23:14:41] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:14:41] Database connection SUCCESS
+[2026-05-06 23:15:06] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:15:06] Database connection SUCCESS
+[2026-05-06 23:15:41] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:15:41] Database connection SUCCESS
+[2026-05-06 23:15:59] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:15:59] Database connection SUCCESS
+[2026-05-06 23:19:57] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:19:57] Database connection SUCCESS
+[2026-05-06 23:21:24] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:21:24] Database connection SUCCESS
+[2026-05-06 23:21:59] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:21:59] Database connection SUCCESS
+[2026-05-06 23:22:07] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:22:07] Database connection SUCCESS
+[2026-05-06 23:23:51] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:23:51] Database connection SUCCESS
+[2026-05-06 23:28:28] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:28:28] Database connection SUCCESS
+[2026-05-06 23:29:08] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:29:08] Database connection SUCCESS
+[2026-05-06 23:29:35] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-06 23:29:35] Database connection SUCCESS
+[2026-05-07 01:51:47] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 01:51:47] Database connection SUCCESS
+[2026-05-07 21:26:48] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:26:48] Database connection SUCCESS
+[2026-05-07 21:26:56] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:26:56] Database connection SUCCESS
+[2026-05-07 21:26:56] Login attempt | {"username":"admin"}
+[2026-05-07 21:26:56] Query executed | {"owner_found":true}
+[2026-05-07 21:26:56] Owner record found | {"id":1,"username":"admin"}
+[2026-05-07 21:26:56] Password verification SUCCESS | {"owner_id":1}
+[2026-05-07 21:26:56] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:26:56] Database connection SUCCESS
+[2026-05-07 21:27:01] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:27:01] Database connection SUCCESS
+[2026-05-07 21:27:19] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:27:19] Database connection SUCCESS
+[2026-05-07 21:27:26] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:27:26] Database connection SUCCESS
+[2026-05-07 21:27:30] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:27:30] Database connection SUCCESS
+[2026-05-07 21:27:47] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:27:47] Database connection SUCCESS
+[2026-05-07 21:29:47] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:29:47] Database connection SUCCESS
+[2026-05-07 21:37:11] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:37:11] Database connection SUCCESS
+[2026-05-07 21:37:14] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:37:14] Database connection SUCCESS
+[2026-05-07 21:37:20] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:37:20] Database connection SUCCESS
+[2026-05-07 21:38:04] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:38:04] Database connection SUCCESS
+[2026-05-07 21:38:22] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:38:22] Database connection SUCCESS
+[2026-05-07 21:40:43] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:40:43] Database connection SUCCESS
+[2026-05-07 21:42:27] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:42:27] Database connection SUCCESS
+[2026-05-07 21:43:06] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:43:06] Database connection SUCCESS
+[2026-05-07 21:43:11] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:43:11] Database connection SUCCESS
+[2026-05-07 21:49:03] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:49:03] Database connection SUCCESS
+[2026-05-07 21:49:07] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:49:07] Database connection SUCCESS
+[2026-05-07 21:49:08] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:49:08] Database connection SUCCESS
+[2026-05-07 21:49:10] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:49:10] Database connection SUCCESS
+[2026-05-07 21:49:11] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:49:11] Database connection SUCCESS
+[2026-05-07 21:49:38] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:49:38] Database connection SUCCESS
+[2026-05-07 21:49:56] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:49:56] Database connection SUCCESS
+[2026-05-07 21:49:58] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:49:58] Database connection SUCCESS
+[2026-05-07 21:49:59] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:49:59] Database connection SUCCESS
+[2026-05-07 21:51:09] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:51:09] Database connection SUCCESS
+[2026-05-07 21:51:28] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:51:28] Database connection SUCCESS
+[2026-05-07 21:52:14] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:52:14] Database connection SUCCESS
+[2026-05-07 21:52:31] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:52:31] Database connection SUCCESS
+[2026-05-07 21:52:35] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:52:35] Database connection SUCCESS
+[2026-05-07 21:52:37] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:52:37] Database connection SUCCESS
+[2026-05-07 21:52:52] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:52:52] Database connection SUCCESS
+[2026-05-07 21:52:57] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:52:57] Database connection SUCCESS
+[2026-05-07 21:53:58] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:53:58] Database connection SUCCESS
+[2026-05-07 21:56:41] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:56:41] Database connection SUCCESS
+[2026-05-07 21:57:45] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:57:45] Database connection SUCCESS
+[2026-05-07 21:57:52] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:57:52] Database connection SUCCESS
+[2026-05-07 21:57:57] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:57:57] Database connection SUCCESS
+[2026-05-07 21:57:59] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:57:59] Database connection SUCCESS
+[2026-05-07 21:58:57] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:58:57] Database connection SUCCESS
+[2026-05-07 21:59:58] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 21:59:58] Database connection SUCCESS
+[2026-05-07 22:00:01] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:00:01] Database connection SUCCESS
+[2026-05-07 22:00:14] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:00:14] Database connection SUCCESS
+[2026-05-07 22:00:22] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:00:22] Database connection SUCCESS
+[2026-05-07 22:00:30] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:00:30] Database connection SUCCESS
+[2026-05-07 22:00:53] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:00:53] Database connection SUCCESS
+[2026-05-07 22:00:54] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:00:54] Database connection SUCCESS
+[2026-05-07 22:00:58] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:00:58] Database connection SUCCESS
+[2026-05-07 22:01:06] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:01:06] Database connection SUCCESS
+[2026-05-07 22:01:11] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:01:11] Database connection SUCCESS
+[2026-05-07 22:02:19] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:02:19] Database connection SUCCESS
+[2026-05-07 22:03:04] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:03:04] Database connection SUCCESS
+[2026-05-07 22:03:08] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:03:08] Database connection SUCCESS
+[2026-05-07 22:03:14] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:03:14] Database connection SUCCESS
+[2026-05-07 22:03:19] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:03:19] Database connection SUCCESS
+[2026-05-07 22:03:25] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:03:25] Database connection SUCCESS
+[2026-05-07 22:03:33] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:03:33] Database connection SUCCESS
+[2026-05-07 22:08:14] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:08:14] Database connection SUCCESS
+[2026-05-07 22:08:15] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:08:15] Database connection SUCCESS
+[2026-05-07 22:08:24] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:08:24] Database connection SUCCESS
+[2026-05-07 22:08:25] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:08:25] Database connection SUCCESS
+[2026-05-07 22:08:32] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:08:32] Database connection SUCCESS
+[2026-05-07 22:08:33] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:08:33] Database connection SUCCESS
+[2026-05-07 22:08:52] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:08:52] Database connection SUCCESS
+[2026-05-07 22:09:02] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:09:02] Database connection SUCCESS
+[2026-05-07 22:14:36] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:14:36] Database connection SUCCESS
+[2026-05-07 22:14:48] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:14:48] Database connection SUCCESS
+[2026-05-07 22:14:49] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:14:49] Database connection SUCCESS
+[2026-05-07 22:15:02] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:15:02] Database connection SUCCESS
+[2026-05-07 22:15:04] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:15:04] Database connection SUCCESS
+[2026-05-07 22:15:15] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:15:15] Database connection SUCCESS
+[2026-05-07 22:15:34] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:15:34] Database connection SUCCESS
+[2026-05-07 22:15:41] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:15:41] Database connection SUCCESS
+[2026-05-07 22:16:03] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:16:03] Database connection SUCCESS
+[2026-05-07 22:16:07] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:16:07] Database connection SUCCESS
+[2026-05-07 22:16:09] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:16:09] Database connection SUCCESS
+[2026-05-07 22:16:12] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:16:12] Database connection SUCCESS
+[2026-05-07 22:16:14] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:16:14] Database connection SUCCESS
+[2026-05-07 22:16:36] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:16:36] Database connection SUCCESS
+[2026-05-07 22:16:45] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:16:45] Database connection SUCCESS
+[2026-05-07 22:16:52] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:16:52] Database connection SUCCESS
+[2026-05-07 22:16:59] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:16:59] Database connection SUCCESS
+[2026-05-07 22:17:04] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:17:04] Database connection SUCCESS
+[2026-05-07 22:17:08] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:17:08] Database connection SUCCESS
+[2026-05-07 22:17:10] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:17:10] Database connection SUCCESS
+[2026-05-07 22:17:11] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:17:11] Database connection SUCCESS
+[2026-05-07 22:17:14] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:17:14] Database connection SUCCESS
+[2026-05-07 22:17:16] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:17:16] Database connection SUCCESS
+[2026-05-07 22:17:22] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:17:22] Database connection SUCCESS
+[2026-05-07 22:17:33] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:17:33] Database connection SUCCESS
+[2026-05-07 22:17:57] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:17:57] Database connection SUCCESS
+[2026-05-07 22:18:01] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:18:01] Database connection SUCCESS
+[2026-05-07 22:18:24] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:18:24] Database connection SUCCESS
+[2026-05-07 22:18:34] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:18:34] Database connection SUCCESS
+[2026-05-07 22:18:35] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:18:35] Database connection SUCCESS
+[2026-05-07 22:18:36] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:18:36] Database connection SUCCESS
+[2026-05-07 22:19:21] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:19:21] Database connection SUCCESS
+[2026-05-07 22:19:22] Database connection attempt | {"host":"localhost","user":"root","db":"textile_commission"}
+[2026-05-07 22:19:22] Database connection SUCCESS

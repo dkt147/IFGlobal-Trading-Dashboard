@@ -156,6 +156,7 @@ CREATE TABLE `payments` (
   `payment_date` date NOT NULL,
   `supplier_id` int(11) DEFAULT NULL,
   `customer_id` int(11) DEFAULT NULL,
+  `contract_id` int(11) DEFAULT NULL,
   `payer_type` enum('customer','supplier') NOT NULL,
   `payment_type` enum('payment','return') DEFAULT 'payment',
   `amount` decimal(15,2) NOT NULL,
