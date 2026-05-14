@@ -23,27 +23,46 @@ if ($filter_supplier || $filter_customer) {
     $inv_row = $conn->query("SELECT last_invoice FROM invoice_counter LIMIT 1")->fetch_assoc();
     $invoice_num = ($inv_row['last_invoice'] ?? 14) + 1;
     
-    if ($filter_supplier) {
+    if ($filter_customer && $filter_supplier) {
+        // BOTH selected — show contracts between this specific pair
+        $party_type = 'both';
+        $cname = $conn->query("SELECT name FROM customers WHERE id=$filter_customer")->fetch_assoc();
+        $sname = $conn->query("SELECT name FROM suppliers WHERE id=$filter_supplier")->fetch_assoc();
+        $party_name = ($cname['name'] ?? '') . ' & ' . ($sname['name'] ?? '');
+        
+        $contracts = $conn->query("
+            SELECT c.*, cu.name as customer_name, s.name as supplier_name
+            FROM contracts c
+            LEFT JOIN customers cu ON c.customer_id = cu.id
+            LEFT JOIN suppliers s ON c.supplier_id = s.id
+            WHERE c.customer_id = $filter_customer AND c.supplier_id = $filter_supplier
+            ORDER BY c.contract_date
+        ");
+    } elseif ($filter_supplier) {
+        // Only supplier selected
         $party_type = 'supplier';
         $p = $conn->query("SELECT * FROM suppliers WHERE id=$filter_supplier")->fetch_assoc();
         $party_name = $p['name'] ?? '';
         
         $contracts = $conn->query("
-            SELECT c.*, cu.name as customer_name
+            SELECT c.*, cu.name as customer_name, s.name as supplier_name
             FROM contracts c
             LEFT JOIN customers cu ON c.customer_id = cu.id
+            LEFT JOIN suppliers s ON c.supplier_id = s.id
             WHERE c.supplier_id = $filter_supplier
             ORDER BY c.contract_date
         ");
     } else {
+        // Only customer selected
         $party_type = 'customer';
         $p = $conn->query("SELECT * FROM customers WHERE id=$filter_customer")->fetch_assoc();
         $party_name = $p['name'] ?? '';
         
         $contracts = $conn->query("
-            SELECT c.*, s.name as supplier_name
+            SELECT c.*, s.name as supplier_name, cu.name as customer_name
             FROM contracts c
             LEFT JOIN suppliers s ON c.supplier_id = s.id
+            LEFT JOIN customers cu ON c.customer_id = cu.id
             WHERE c.customer_id = $filter_customer
             ORDER BY c.contract_date
         ");
@@ -61,11 +80,18 @@ if ($filter_supplier || $filter_customer) {
             $comm_label = 'PKR ' . $c['commission_value'] . '/unit';
         }
         
-        $other_party = $party_type === 'supplier' ? ($c['customer_name'] ?? '—') : ($c['supplier_name'] ?? '—');
+        // Description: show the other party name with description
+        if ($party_type === 'both') {
+            $desc_prefix = strip_tags($c['description'] ?? '');
+        } elseif ($party_type === 'supplier') {
+            $desc_prefix = ($c['customer_name'] ?? '—') . ' — ' . strip_tags($c['description'] ?? '');
+        } else {
+            $desc_prefix = ($c['supplier_name'] ?? '—') . ' — ' . strip_tags($c['description'] ?? '');
+        }
         
         $invoice_data[] = [
             'date'         => $c['contract_date'],
-            'description'  => ($other_party . ' — ' . $c['description']),
+            'description'  => $desc_prefix,
             'qty'          => $c['qty'],
             'qty_unit'     => $c['qty_unit'],
             'rate'         => $c['rate'],
@@ -80,6 +106,8 @@ if ($filter_supplier || $filter_customer) {
 require_once '../includes/header.php';
 ?>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <div class="page-header">
   <h1>Commission PDF Generator</h1>
 </div>
@@ -92,21 +120,21 @@ require_once '../includes/header.php';
   <div class="card-body">
     <form method="GET">
       <div class="form-group" style="margin-bottom:1rem">
-        <label class="form-label">Supplier</label>
-        <select name="supplier_id" class="form-control" onchange="this.form.customer_id.value=''; this.form.submit()">
-          <option value="">— Select Supplier —</option>
-          <?php $suppliers->data_seek(0); while ($s = $suppliers->fetch_assoc()): ?>
-            <option value="<?= $s['id'] ?>" <?= $filter_supplier==$s['id']?'selected':'' ?>><?= htmlspecialchars($s['name']) ?></option>
-          <?php endwhile; ?>
-        </select>
-      </div>
-      <div style="text-align:center; font-size:0.65rem; color:var(--ash); margin:0.5rem 0; letter-spacing:0.15em">— OR —</div>
-      <div class="form-group" style="margin-bottom:1rem">
         <label class="form-label">Customer</label>
-        <select name="customer_id" class="form-control" onchange="this.form.supplier_id.value=''; this.form.submit()">
+        <select name="customer_id" class="form-control" onchange="this.form.submit()">
           <option value="">— Select Customer —</option>
           <?php $customers->data_seek(0); while ($c = $customers->fetch_assoc()): ?>
             <option value="<?= $c['id'] ?>" <?= $filter_customer==$c['id']?'selected':'' ?>><?= htmlspecialchars($c['name']) ?></option>
+          <?php endwhile; ?>
+        </select>
+      </div>
+      <div style="text-align:center; font-size:0.65rem; color:var(--ash); margin:0.5rem 0; letter-spacing:0.15em">— AND / OR —</div>
+      <div class="form-group" style="margin-bottom:1rem">
+        <label class="form-label">Supplier</label>
+        <select name="supplier_id" class="form-control" onchange="this.form.submit()">
+          <option value="">— Select Supplier —</option>
+          <?php $suppliers->data_seek(0); while ($s = $suppliers->fetch_assoc()): ?>
+            <option value="<?= $s['id'] ?>" <?= $filter_supplier==$s['id']?'selected':'' ?>><?= htmlspecialchars($s['name']) ?></option>
           <?php endwhile; ?>
         </select>
       </div>
@@ -115,12 +143,9 @@ require_once '../includes/header.php';
 
     <?php if ($invoice_data): ?>
     <div style="margin-top:1.5rem; border-top:1px solid var(--border); padding-top:1rem;">
-      <button class="btn btn-pdf" style="width:100%; justify-content:center" onclick="printInvoice()">
+      <!-- <button class="btn btn-pdf" style="width:100%; justify-content:center" onclick="printInvoice()">
         ⬇ Download PDF
-      </button>
-      <div style="font-size:0.6rem; color:var(--ash); text-align:center; margin-top:0.5rem; letter-spacing:0.1em">
-        Use browser Print → Save as PDF
-      </div>
+      </button> -->
     </div>
     <?php endif; ?>
   </div>
@@ -156,7 +181,13 @@ require_once '../includes/header.php';
     <div style="font-size:0.58rem; letter-spacing:0.25em; text-transform:uppercase; color:#9C7A4A; margin-bottom:0.4rem;">Bill To</div>
     <div style="font-size:1rem; font-weight:500; color:#2C2A26;"><?= htmlspecialchars($party_name) ?></div>
     <div style="font-size:0.7rem; color:#6B6560; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.1em;">
-      <?= $party_type === 'supplier' ? 'Supplier' : 'Customer' ?>
+      <?php if ($party_type === 'both'): ?>
+        Customer & Supplier
+      <?php elseif ($party_type === 'supplier'): ?>
+        Supplier
+      <?php else: ?>
+        Customer
+      <?php endif; ?>
     </div>
   </div>
 
@@ -224,7 +255,7 @@ require_once '../includes/header.php';
 
 <?php elseif (!($filter_supplier || $filter_customer)): ?>
 <div class="card" style="display:flex; align-items:center; justify-content:center; min-height:300px;">
-  <div class="no-data">← Select a supplier or customer to preview their commission bill</div>
+  <div class="no-data">← Select a customer, supplier, or both to preview their commission bill</div>
 </div>
 <?php else: ?>
 <div class="card" style="display:flex; align-items:center; justify-content:center; min-height:200px;">
@@ -236,18 +267,15 @@ require_once '../includes/header.php';
 
 <script>
 function printInvoice() {
-  const content = document.getElementById('invoice-preview').innerHTML;
-  const win = window.open('', '_blank');
-  win.document.write(`<!DOCTYPE html><html><head>
-    <title>Commission Invoice</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
-    <style>
-      body { margin:0; padding:2rem; font-family:'DM Mono',monospace; background:white; }
-      @media print { body { padding:0; } }
-    </style>
-  </head><body>${content}</body></html>`);
-  win.document.close();
-  setTimeout(() => win.print(), 800);
+  const element = document.getElementById('invoice-preview');
+  const opt = {
+    margin: 0.5,
+    filename: 'commission-invoice-<?= htmlspecialchars($party_name) ?>-<?= date('Y-m-d') ?>.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save();
 }
 </script>
 

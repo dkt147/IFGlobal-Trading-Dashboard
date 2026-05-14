@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'add') {
         $name = trim($_POST['name']);
-        $desc = trim($_POST['description']);
+        $desc = strip_tags(trim($_POST['description']));
         $phone = trim($_POST['phone']);
         $address = trim($_POST['address']);
         $stmt = $conn->prepare("INSERT INTO customers (name, description, phone, address) VALUES (?,?,?,?)");
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'edit') {
         $id = (int)$_POST['id'];
         $name = trim($_POST['name']);
-        $desc = trim($_POST['description']);
+        $desc = strip_tags(trim($_POST['description']));
         $phone = trim($_POST['phone']);
         $address = trim($_POST['address']);
         $stmt = $conn->prepare("UPDATE customers SET name=?, description=?, phone=?, address=? WHERE id=?");
@@ -60,7 +60,7 @@ require_once '../includes/header.php';
         <tr>
           <td><?= $i++ ?></td>
           <td class="td-bold"><?= htmlspecialchars($row['name']) ?></td>
-          <td><?= htmlspecialchars($row['description'] ?? '—') ?></td>
+          <td><?= strip_tags($row['description'] ?? '—') ?: '—' ?></td>
           <td><?= htmlspecialchars($row['phone'] ?? '—') ?></td>
           <td><?= htmlspecialchars($row['address'] ?? '—') ?></td>
           <td class="td-num"><?= $row['do_cnt'] ?></td>

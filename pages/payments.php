@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // Determine payer_type based on which party is selected
             if ($customer_id && $supplier_id) {
-                $payer_type = 'both';
+                $payer_type = 'customer'; // Default to customer if both selected
             } elseif ($customer_id) {
                 $payer_type = 'customer';
             } else {
@@ -30,12 +30,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (empty($msg)) {
                 $payment_type = $_POST['payment_type'];
                 $amount       = (float)$_POST['amount'];
-                $note         = trim($_POST['note']);
-                $contract_id  = $_POST['contract_id'] ?: null;
-                $stmt = $conn->prepare("INSERT INTO payments (payment_date,supplier_id,customer_id,payer_type,payment_type,amount,note,contract_id) VALUES (?,?,?,?,?,?,?,?)");
-                $stmt->bind_param("siissdsi", $date,$supplier_id,$customer_id,$payer_type,$payment_type,$amount,$note,$contract_id);
-                $stmt->execute();
-                $msg = 'success:Payment recorded.';
+                $note         = strip_tags(trim($_POST['note']));
+                $receipt_number = trim($_POST['receipt_number'] ?? '');
+                $contract_id  = !empty($_POST['contract_id']) ? (int)$_POST['contract_id'] : null;
+                $supplier_id  = !empty($supplier_id) ? (int)$supplier_id : null;
+                $customer_id  = !empty($customer_id) ? (int)$customer_id : null;
+                
+                $stmt = $conn->prepare("INSERT INTO payments (payment_date,supplier_id,customer_id,payer_type,payment_type,amount,note,receipt_number,contract_id) VALUES (?,?,?,?,?,?,?,?,?)");
+                if (!$stmt) {
+                    $msg = 'error:Database error: ' . $conn->error;
+                } else {
+                    $stmt->bind_param("siissdssi", $date,$supplier_id,$customer_id,$payer_type,$payment_type,$amount,$note,$receipt_number,$contract_id);
+                    if (!$stmt->execute()) {
+                        $msg = 'error:Failed to record payment: ' . $stmt->error;
+                    } else {
+                        $msg = 'success:Payment recorded.';
+                    }
+                    $stmt->close();
+                }
             }
         }
     } elseif ($action === 'delete') {
@@ -98,13 +110,14 @@ require_once '../includes/header.php';
   <div class="tbl-wrap">
     <table>
       <thead><tr>
-        <th>S#</th><th>Date</th><th>Party</th><th>Party Type</th><th>Amount</th><th>Type</th><th>Note</th><th>Actions</th>
+        <th>S#</th><th>Date</th><th>Receipt #</th><th>Party</th><th>Party Type</th><th>Amount</th><th>Type</th><th>Note</th><th>Actions</th>
       </tr></thead>
       <tbody>
       <?php $i=1; while ($row = $payments->fetch_assoc()): ?>
         <tr>
           <td><?= $i++ ?></td>
           <td><?= date('d/m/Y', strtotime($row['payment_date'])) ?></td>
+          <td><?= htmlspecialchars($row['receipt_number'] ?? '—') ?></td>
           <td class="td-bold">
             <?php 
               if ($row['payer_type'] === 'both') {
@@ -130,7 +143,7 @@ require_once '../includes/header.php';
       </tbody>
       <tfoot>
         <tr class="totals-row">
-          <td colspan="4"><strong>TOTAL</strong></td>
+          <td colspan="7"><strong>TOTAL</strong></td>
           <td class="td-num"><strong><?= number_format($totals['total'] ?? 0, 2) ?></strong></td>
           <td colspan="3"></td>
         </tr>
@@ -167,6 +180,10 @@ require_once '../includes/header.php';
               <option value="payment">Payment (Received)</option>
               <option value="return">Return Payment</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Receipt Number</label>
+            <input type="text" name="receipt_number" class="form-control" placeholder="e.g., RCP-001, Invoice #123">
           </div>
           <div class="form-group">
             <label class="form-label">Customer</label>
@@ -206,7 +223,7 @@ require_once '../includes/header.php';
           </div>
           <div class="form-group">
             <label class="form-label">Amount (PKR) *</label>
-            <input type="number" name="amount" class="form-control" step="0.01" required>
+            <input type="number" name="amount" class="form-control" required>
           </div>
           <div class="form-group" style="grid-column:1/-1">
             <label class="form-label">Note</label>

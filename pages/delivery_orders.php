@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $contract_id = $_POST['contract_id'] ?: null;
         $supplier_id = $_POST['supplier_id'] ?: null;
         $customer_id = $_POST['customer_id'] ?: null;
-        $desc        = trim($_POST['description']);
+        $desc        = strip_tags(trim($_POST['description']));
         $qty         = (float)$_POST['qty'];
         $rate        = (float)$_POST['rate'];
         $type        = $_POST['type'];
@@ -185,7 +185,7 @@ require_once '../includes/header.php';
                            ($ct['qty_unit'] ?: 'METER') . ' | Rs ' .
                            (float)$ct['rate'];
                 ?>
-                <option value="<?= $ct['id'] ?>" data-qty="<?= $ct['qty'] ?>" data-rate="<?= $ct['rate'] ?>" data-desc="<?= htmlspecialchars($ct['description'] ?? '') ?>">
+                <option value="<?= $ct['id'] ?>" data-qty="<?= $ct['qty'] ?>" data-rate="<?= $ct['rate'] ?>" data-desc="<?= htmlspecialchars(strip_tags($ct['description'] ?? '')) ?>">
                   Contract #<?= $ct['id'] ?> - <?= htmlspecialchars($label) ?>
                 </option>
               <?php endwhile; ?>
@@ -197,11 +197,11 @@ require_once '../includes/header.php';
           </div>
           <div class="form-group">
             <label class="form-label">Quantity *</label>
-            <input type="number" name="qty" id="qty" class="form-control" step="0.01" required>
+            <input type="number" name="qty" id="qty" class="form-control" required>
           </div>
           <div class="form-group">
             <label class="form-label">Rate (PKR) *</label>
-            <input type="number" name="rate" id="rate" class="form-control" step="0.01" required>
+            <input type="number" name="rate" id="rate" class="form-control" required>
           </div>
           <div class="form-group">
             <label class="form-label">Debit (auto)</label>

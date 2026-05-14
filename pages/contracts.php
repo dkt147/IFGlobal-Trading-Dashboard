@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $date        = $_POST['contract_date'];
         $supplier_id = $_POST['supplier_id'] ?: null;
         $customer_id = $_POST['customer_id'] ?: null;
-        $note        = trim($_POST['note']);
-        $desc        = trim($_POST['description']);
+        $note        = strip_tags(trim($_POST['note']));
+        $desc        = strip_tags(trim($_POST['description']));
         $qty         = (float)$_POST['qty'];
         $qty_unit    = $_POST['qty_unit'];
         $rate        = (float)$_POST['rate'];
@@ -133,7 +133,7 @@ require_once '../includes/header.php';
           </div>
           <div class="form-group">
             <label class="form-label">Quantity *</label>
-            <input type="number" name="qty" id="qty" class="form-control" step="0.01" required>
+            <input type="number" name="qty" id="qty" class="form-control" required>
           </div>
           <div class="form-group">
             <label class="form-label">Qty Unit</label>
@@ -146,7 +146,7 @@ require_once '../includes/header.php';
           </div>
           <div class="form-group">
             <label class="form-label">Rate (PKR) *</label>
-            <input type="number" name="rate" id="rate" class="form-control" step="0.01" required>
+            <input type="number" name="rate" id="rate" class="form-control" required>
           </div>
           <div class="form-group">
             <label class="form-label">Debit (auto)</label>
@@ -163,7 +163,7 @@ require_once '../includes/header.php';
           </div>
           <div class="form-group">
             <label class="form-label" id="comm_value_label">Commission %</label>
-            <input type="number" name="commission_value" class="form-control" step="0.0001" value="1.0" required>
+            <input type="number" name="commission_value" class="form-control" value="1.0" required>
           </div>
           <div class="form-group" style="grid-column:1/-1">
             <label class="form-label">Note</label>
