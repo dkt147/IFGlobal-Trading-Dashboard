@@ -48,7 +48,12 @@ $orders = $conn->query("
   ORDER BY d.do_date DESC, d.id DESC
 ");
 
-$totals = $conn->query("SELECT SUM(qty) as tqty, SUM(debit) as tdebit FROM delivery_orders d $where")->fetch_assoc();
+$totals = $conn->query(
+  "SELECT 
+      SUM(CASE WHEN type = 'return' THEN -qty ELSE qty END) as tqty, 
+      SUM(CASE WHEN type = 'return' THEN -debit ELSE debit END) as tdebit 
+    FROM delivery_orders d $where"
+)->fetch_assoc();
 
 $suppliers = $conn->query("SELECT id, name FROM suppliers ORDER BY name");
 $customers = $conn->query("SELECT id, name FROM customers ORDER BY name");
@@ -104,9 +109,9 @@ require_once '../includes/header.php';
           <td><?= htmlspecialchars($row['supplier_name'] ?? '—') ?></td>
           <td><?= htmlspecialchars($row['customer_name'] ?? '—') ?></td>
           <td><?= strip_tags($row['description'] ?? $row['contract_desc'] ?? '—') ?></td>
-          <td class="td-num"><?= number_format($row['qty'], 2) ?></td>
+          <td class="td-num"><?= number_format(($row['type']==='return' ? -$row['qty'] : $row['qty']), 2) ?></td>
           <td class="td-num"><?= number_format($row['rate'], 2) ?></td>
-          <td class="td-num"><?= number_format($row['debit'], 2) ?></td>
+          <td class="td-num"><?= number_format(($row['type']==='return' ? -$row['debit'] : $row['debit']), 2) ?></td>
           <td><span class="badge badge-<?= $row['type'] ?>"><?= $row['type'] ?></span></td>
           <td>
             <form method="POST" style="display:inline" onsubmit="return confirm('Delete?')">

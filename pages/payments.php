@@ -71,7 +71,9 @@ $payments = $conn->query("
   $where
   ORDER BY p.payment_date DESC, p.id DESC
 ");
-$totals = $conn->query("SELECT SUM(amount) as total FROM payments p $where")->fetch_assoc();
+$totals = $conn->query(
+  "SELECT SUM(CASE WHEN payment_type = 'return' THEN -amount ELSE amount END) as total FROM payments p $where"
+)->fetch_assoc();
 
 $suppliers = $conn->query("SELECT id, name FROM suppliers ORDER BY name");
 $customers = $conn->query("SELECT id, name FROM customers ORDER BY name");
@@ -128,7 +130,7 @@ require_once '../includes/header.php';
             ?>
           </td>
           <td><span class="badge badge-<?= $row['payer_type'] === 'customer' ? 'send' : ($row['payer_type'] === 'supplier' ? 'pct' : 'primary') ?>"><?= ucfirst($row['payer_type']) ?></span></td>
-          <td class="td-num"><?= number_format($row['amount'], 2) ?></td>
+          <td class="td-num"><?= number_format(($row['payment_type']==='return' ? -$row['amount'] : $row['amount']), 2) ?></td>
           <td><span class="badge badge-<?= $row['payment_type'] === 'payment' ? 'payment' : 'return' ?>"><?= $row['payment_type'] ?></span></td>
           <td><?= strip_tags($row['note'] ?? '—') ?: '—' ?></td>
           <td>
