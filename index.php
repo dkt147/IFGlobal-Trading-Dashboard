@@ -68,25 +68,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="/Global-Sourcing/images/global.png">
 <title>IF Global Sourcing — Sign In</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ivory: #F8F5EF;
-    --cream: #EDE8DF;
-    --clay: #C5A882;
-    --bronze: #9C7A4A;
-    --charcoal: #2C2A26;
-    --ash: #6B6560;
-    --error: #B94040;
+    --teal: #2B8CAE;
+    --teal-dark: #1F5F7A;
+    --teal-light: #E8F3F8;
+    --light-bg: #F5F7FA;
+    --dark: #1A1F2E;
+    --gray: #6B7280;
+    --charcoal: #1A1F2E;
+    --error: #EF4444;
     --white: #FFFFFF;
   }
 
   body {
-    font-family: 'DM Mono', monospace;
-    background: var(--ivory);
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, var(--teal-light) 0%, var(--light-bg) 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -95,24 +97,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     overflow: hidden;
   }
 
-  /* Textile grain background */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: 
-      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(197,168,130,0.04) 2px, rgba(197,168,130,0.04) 4px),
-      repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(197,168,130,0.03) 3px, rgba(197,168,130,0.03) 6px);
-    pointer-events: none;
-    z-index: 0;
-  }
-
   /* Decorative corner elements */
   body::after {
     content: '';
     position: fixed;
     top: 0; right: 0;
     width: 350px; height: 350px;
-    background: radial-gradient(ellipse at top right, rgba(197,168,130,0.18), transparent 70%);
+    background: radial-gradient(ellipse at top right, rgba(43,140,174,0.15), transparent 70%);
     pointer-events: none;
   }
 
@@ -120,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     position: fixed;
     bottom: 0; left: 0;
     width: 300px; height: 300px;
-    background: radial-gradient(ellipse at bottom left, rgba(197,168,130,0.12), transparent 70%);
+    background: radial-gradient(ellipse at bottom left, rgba(43,140,174,0.1), transparent 70%);
     pointer-events: none;
   }
 
@@ -142,33 +133,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   .logo-mark {
-    width: 64px; height: 64px;
-    border: 1.5px solid var(--clay);
+    width: 140px; height: 70px;
+    /* border: 2px solid var(--teal); */
     display: flex; align-items: center; justify-content: center;
-    margin-bottom: 1.5rem;
+    margin: 0 auto 1.5rem;
     position: relative;
+    background: var(--white);
   }
   .logo-mark::before, .logo-mark::after {
     content: '';
     position: absolute;
-    border: 1px solid var(--clay);
+    /* border: 1px solid var(--teal); */
   }
-  .logo-mark::before { inset: -5px; }
-  .logo-mark::after  { inset: -9px; opacity: 0.4; }
-  .logo-mark span {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: var(--bronze);
-    letter-spacing: 0.05em;
+  .logo-mark::before { inset: -4px; }
+  .logo-mark::after  { inset: -8px; opacity: 0.4; }
+
+  .logo-mark img {
+    width: 170px;
+    height: auto;
+    object-fit: contain;
+    display: block;
   }
 
   .brand-name {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Inter', sans-serif;
     font-size: 1.6rem;
-    font-weight: 300;
-    color: var(--charcoal);
-    letter-spacing: 0.12em;
+    font-weight: 600;
+    color: var(--dark);
+    letter-spacing: 0;
     text-transform: uppercase;
     text-align: center;
     margin-bottom: 0.3rem;
@@ -176,8 +168,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   .tagline {
     font-size: 0.65rem;
-    color: var(--ash);
-    letter-spacing: 0.2em;
+    color: var(--gray);
+    letter-spacing: 0;
     text-transform: uppercase;
     text-align: center;
     margin-bottom: 2.5rem;
@@ -186,34 +178,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   .card {
     width: 100%;
     background: var(--white);
-    border: 1px solid rgba(197,168,130,0.3);
+    border: 1px solid #E5E7EB;
     padding: 2.5rem 2rem;
     position: relative;
-    box-shadow: 0 4px 40px rgba(44,42,38,0.08);
+    box-shadow: 0 4px 40px rgba(26,31,46,0.08);
   }
   .card::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--clay), transparent);
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--teal), transparent);
   }
 
   .section-label {
     font-size: 0.6rem;
-    letter-spacing: 0.25em;
+    letter-spacing: 0;
     text-transform: uppercase;
-    color: var(--clay);
+    color: var(--teal);
     margin-bottom: 1.8rem;
     display: flex;
     align-items: center;
     gap: 0.8rem;
+    margin-top: 50px;
   }
   .section-label::after {
     content: '';
     flex: 1;
     height: 1px;
-    background: rgba(197,168,130,0.3);
+    background: #E5E7EB;
   }
 
   .field { margin-bottom: 1.4rem; }
@@ -221,56 +214,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   .field label {
     display: block;
     font-size: 0.6rem;
-    letter-spacing: 0.2em;
+    letter-spacing: 0;
     text-transform: uppercase;
-    color: var(--ash);
+    color: var(--gray);
     margin-bottom: 0.5rem;
   }
 
   .field input {
     width: 100%;
-    background: var(--ivory);
-    border: 1px solid rgba(197,168,130,0.35);
+    background: var(--white);
+    border: 1px solid #E5E7EB;
     border-radius: 0;
     padding: 0.75rem 1rem;
-    font-family: 'DM Mono', monospace;
+    font-family: 'Inter', sans-serif;
     font-size: 0.85rem;
-    color: var(--charcoal);
+    color: var(--dark);
     outline: none;
     transition: border-color 0.2s, background 0.2s;
   }
   .field input:focus {
-    border-color: var(--clay);
-    background: #FDFBF8;
+    border-color: var(--teal);
+    background: var(--teal-light);
   }
 
   .error-msg {
-    background: rgba(185,64,64,0.07);
+    background: rgba(239,68,68,0.07);
     border-left: 3px solid var(--error);
     padding: 0.6rem 0.8rem;
     font-size: 0.72rem;
     color: var(--error);
     margin-bottom: 1.2rem;
-    letter-spacing: 0.05em;
+    letter-spacing: 0;
   }
 
   .btn-login {
     width: 100%;
-    background: var(--charcoal);
-    color: var(--cream);
+    background: var(--teal);
+    color: var(--white);
     border: none;
     padding: 0.9rem 1rem;
-    font-family: 'DM Mono', monospace;
+    font-family: 'Inter', sans-serif;
     font-size: 0.72rem;
-    letter-spacing: 0.25em;
+    letter-spacing: 0;
     text-transform: uppercase;
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
     position: relative;
     overflow: hidden;
+    font-weight: 600;
   }
   .btn-login:hover {
-    background: var(--bronze);
+    background: var(--teal-dark);
     color: var(--white);
   }
   .btn-login:active { transform: scale(0.99); }
@@ -278,8 +272,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   .footer-note {
     margin-top: 2rem;
     font-size: 0.6rem;
-    letter-spacing: 0.15em;
-    color: var(--ash);
+    letter-spacing: 0;
+    color: var(--gray);
     text-align: center;
     text-transform: uppercase;
   }
@@ -287,13 +281,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <div class="corner-deco"></div>
 
-<div class="login-wrap">
-  <div class="logo-mark"><span>IF</span></div>
-  <div class="brand-name">IF Global Sourcing</div>
-  <div class="tagline">Commission Management Portal</div>
-
-  <div class="card">
-    <div class="section-label">Access Portal</div>
+  <div class="login-wrap">
+    <div class="card">
+      <div class="logo-mark"><img src="/Global-Sourcing/images/global.png" alt="Global Sourcing"></div>
+      <!-- <div class="brand-name">Global Sourcing</div>
+      <div class="tagline">Commission Management Portal</div> -->
+      <div class="section-label">Access Portal</div>
 
     <?php if ($error): ?>
     <div class="error-msg"><?= htmlspecialchars($error) ?></div>
@@ -310,9 +303,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
       <button type="submit" class="btn-login">Sign In &rarr;</button>
     </form>
+    <div class="footer-note">Karachi &bull; Pakistan</div>
   </div>
-
-  <div class="footer-note">Karachi &bull; Pakistan</div>
 </div>
 </body>
 </html>
