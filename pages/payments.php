@@ -59,9 +59,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $filter_type = $_GET['type'] ?? '';
 $filter_payer = $_GET['payer_type'] ?? '';
+$filter_customer = $_GET['customer_id'] ?? '';
+$filter_supplier = $_GET['supplier_id'] ?? '';
 $where = "WHERE 1=1";
 if ($filter_type)  $where .= " AND p.payment_type='" . $conn->real_escape_string($filter_type) . "'";
 if ($filter_payer) $where .= " AND p.payer_type='"   . $conn->real_escape_string($filter_payer) . "'";
+if ($filter_customer) $where .= " AND p.customer_id=" . (int)$filter_customer;
+if ($filter_supplier) $where .= " AND p.supplier_id=" . (int)$filter_supplier;
 
 $payments = $conn->query("
   SELECT p.*, c.name as customer_name, s.name as supplier_name
@@ -94,11 +98,30 @@ require_once '../includes/header.php';
 </div>
 
 <form method="GET" class="filter-row">
+  <!-- Party Quick Filters -->
+  <select name="customer_id" class="form-control" onchange="this.form.submit()">
+    <option value="">All Customers</option>
+    <?php $customers->data_seek(0); while ($c = $customers->fetch_assoc()): ?>
+      <option value="<?= $c['id'] ?>" <?= $filter_customer == $c['id'] ? 'selected' : '' ?>>
+        <?= htmlspecialchars($c['name']) ?>
+      </option>
+    <?php endwhile; ?>
+  </select>
+
+  <select name="supplier_id" class="form-control" onchange="this.form.submit()">
+    <option value="">All Suppliers</option>
+    <?php $suppliers->data_seek(0); while ($s = $suppliers->fetch_assoc()): ?>
+      <option value="<?= $s['id'] ?>" <?= $filter_supplier == $s['id'] ? 'selected' : '' ?>>
+        <?= htmlspecialchars($s['name']) ?>
+      </option>
+    <?php endwhile; ?>
+  </select>
+
+  <!-- Type Filters -->
   <select name="payer_type" class="form-control" onchange="this.form.submit()">
     <option value="">All Parties</option>
     <option value="customer" <?= $filter_payer==='customer'?'selected':'' ?>>Customers</option>
     <option value="supplier" <?= $filter_payer==='supplier'?'selected':'' ?>>Suppliers</option>
-    <option value="both" <?= $filter_payer==='both'?'selected':'' ?>>Both</option>
   </select>
   <select name="type" class="form-control" onchange="this.form.submit()">
     <option value="">All Types</option>
