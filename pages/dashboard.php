@@ -45,88 +45,100 @@ require_once '../includes/header.php';
 ?>
 
 <div class="stats-row">
-  <div class="stat-card">
-    <div class="stat-label">Total Suppliers</div>
-    <div class="stat-value"><?= $stats['suppliers'] ?></div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Total Customers</div>
-    <div class="stat-value"><?= $stats['customers'] ?></div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Contracts</div>
-    <div class="stat-value"><?= $stats['contracts'] ?></div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Delivery Orders</div>
-    <div class="stat-value"><?= $stats['delivery_orders'] ?></div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Total Debit</div>
-    <div class="stat-value" style="font-size:1.3rem">PKR <?= number_format($stats['total_debit'], 0) ?></div>
-    <div class="stat-sub">From delivery orders</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Total Received</div>
-    <div class="stat-value" style="font-size:1.3rem">PKR <?= number_format($stats['total_payments'], 0) ?></div>
-    <div class="stat-sub"><?= $stats['payment_count'] ?> payments</div>
-  </div>
+    <div class="stat-card">
+        <div class="stat-label">Total Suppliers</div>
+        <div class="stat-value"><?= $stats['suppliers'] ?></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Total Customers</div>
+        <div class="stat-value"><?= $stats['customers'] ?></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Contracts</div>
+        <div class="stat-value"><?= $stats['contracts'] ?></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Delivery Orders</div>
+        <div class="stat-value"><?= $stats['delivery_orders'] ?></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Total Debit</div>
+        <div class="stat-value" style="font-size:1.3rem">PKR <?= number_format($stats['total_debit'], 0) ?></div>
+        <div class="stat-sub">From delivery orders</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Total Received</div>
+        <div class="stat-value" style="font-size:1.3rem">PKR <?= number_format($stats['total_payments'], 0) ?></div>
+        <div class="stat-sub"><?= $stats['payment_count'] ?> payments</div>
+    </div>
 </div>
 
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
 
-<div class="card">
-  <div class="card-header">
-    <div class="card-title">Recent Delivery Orders</div>
-    <a href="delivery_orders.php" class="btn btn-secondary btn-sm">View All</a>
-  </div>
-  <div class="tbl-wrap">
-    <table>
-      <thead><tr>
-        <th>Date</th><th>Customer</th><th>Qty</th><th>Debit</th><th>Type</th>
-      </tr></thead>
-      <tbody>
-      <?php while ($row = $recent_do->fetch_assoc()): ?>
-        <tr>
-          <td><?= date('d/m/y', strtotime($row['do_date'])) ?></td>
-          <td><?= htmlspecialchars($row['customer_name'] ?? '—') ?></td>
-          <td class="td-num"><?= number_format($row['qty'], 0) ?></td>
-          <td class="td-num"><?= number_format($row['debit'], 0) ?></td>
-          <td><span class="badge badge-<?= $row['type'] ?>"><?= $row['type'] ?></span></td>
-        </tr>
-      <?php endwhile; ?>
-      </tbody>
-    </table>
-  </div>
-</div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Recent Delivery Orders</div>
+            <a href="delivery_orders.php" class="btn btn-secondary btn-sm">View All</a>
+        </div>
+        <div class="tbl-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Qty</th>
+                        <th>Debit</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = $recent_do->fetch_assoc()): ?>
+                    <tr>
+                        <td><?= date('d/m/y', strtotime($row['do_date'])) ?></td>
+                        <td><?= htmlspecialchars($row['customer_name'] ?? '—') ?></td>
+                        <td class="td-num"><?= number_format($row['qty'], 0) ?></td>
+                        <td class="td-num"><?= number_format($row['debit'], 0) ?></td>
+                        <td><span class="badge badge-<?= $row['type'] ?>"><?= $row['type'] ?></span></td>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<div class="card">
-  <div class="card-header">
-    <div class="card-title">Recent Payments</div>
-    <a href="payments.php" class="btn btn-secondary btn-sm">View All</a>
-  </div>
-  <div class="tbl-wrap">
-    <table>
-      <thead><tr>
-        <th>Date</th><th>Party</th><th>Amount</th><th>Type</th>
-      </tr></thead>
-      <tbody>
-      <?php while ($row = $recent_pay->fetch_assoc()): ?>
-        <tr>
-          <td><?= date('d/m/y', strtotime($row['payment_date'])) ?></td>
-          <td><?= htmlspecialchars($row['payer_type'] === 'customer' ? ($row['customer_name'] ?? '—') : ($row['supplier_name'] ?? '—')) ?></td>
-          <td class="td-num"><?= number_format($row['amount'], 0) ?></td>
-          <td>
-            <span class="badge badge-<?= $row['payment_type'] === 'payment' ? 'payment' : 'return' ?>">
-              <?= $row['payment_type'] ?>
-            </span>
-          </td>
-        </tr>
-      <?php endwhile; ?>
-      </tbody>
-    </table>
-  </div>
-</div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Recent Payments</div>
+            <a href="payments.php" class="btn btn-secondary btn-sm">View All</a>
+        </div>
+        <div class="tbl-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Party</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = $recent_pay->fetch_assoc()): ?>
+                    <tr>
+                        <td><?= date('d/m/y', strtotime($row['payment_date'])) ?></td>
+                        <td><?= htmlspecialchars($row['payer_type'] === 'customer' ? ($row['customer_name'] ?? '—') : ($row['supplier_name'] ?? '—')) ?>
+                        </td>
+                        <td class="td-num"><?= number_format($row['amount'], 0) ?></td>
+                        <td>
+                            <span class="badge badge-<?= $row['payment_type'] === 'payment' ? 'payment' : 'return' ?>">
+                                <?= $row['payment_type'] ?>
+                            </span>
+                        </td>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 </div>
 

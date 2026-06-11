@@ -38,6 +38,25 @@ if ($filter_customer) $where .= " AND d.customer_id=$filter_customer";
 if ($filter_supplier) $where .= " AND d.supplier_id=$filter_supplier";
 if ($filter_type) $where .= " AND d.type='" . $conn->real_escape_string($filter_type) . "'";
 
+// Filter params for pagination links
+$filter_query = http_build_query(array_filter([
+    'customer_id' => $filter_customer ?: null,
+    'supplier_id' => $filter_supplier ?: null,
+    'type'        => $filter_type ?: null,
+]));
+$filter_prefix = $filter_query ? $filter_query . '&' : '';
+
+// Pagination setup
+$records_per_page = 15;
+$page = max(1, (int)($_GET['page'] ?? 1));
+
+// Total count with filters
+$total_result = $conn->query("SELECT COUNT(*) as cnt FROM delivery_orders d $where");
+$total_records = $total_result->fetch_assoc()['cnt'];
+$total_pages = (int)ceil($total_records / $records_per_page);
+$page = min($page, max(1, $total_pages));
+$offset = ($page - 1) * $records_per_page;
+
 $orders = $conn->query("
   SELECT d.*, c.name as customer_name, s.name as supplier_name, ct.description as contract_desc
   FROM delivery_orders d
@@ -46,8 +65,10 @@ $orders = $conn->query("
   LEFT JOIN contracts ct ON d.contract_id = ct.id
   $where
   ORDER BY d.do_date DESC, d.id DESC
+  LIMIT $records_per_page OFFSET $offset
 ");
 
+// Totals always across ALL filtered records (not just current page)
 $totals = $conn->query(
   "SELECT 
       SUM(CASE WHEN type = 'return' THEN -qty ELSE qty END) as tqty, 
@@ -67,121 +88,197 @@ require_once '../includes/header.php';
 <div class="alert alert-<?= $mtype ?>"><?= htmlspecialchars($mtext) ?></div>
 <?php endif; ?>
 
+<style>
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.pagination-info {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.pagination-links {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.pg-ellipsis {
+    padding: 0 4px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+</style>
+
 <div class="page-header">
-  <h1>Delivery Orders</h1>
-  <button class="btn btn-primary" onclick="openModal('addModal')">+ New Delivery Order</button>
+    <h1>Delivery Orders</h1>
+    <button class="btn btn-primary" onclick="openModal('addModal')">+ New Delivery Order</button>
 </div>
 
 <!-- Filters -->
 <form method="GET" class="filter-row">
-  <select name="customer_id" class="form-control" onchange="this.form.submit()">
-    <option value="">All Customers</option>
-    <?php $customers->data_seek(0); while ($c = $customers->fetch_assoc()): ?>
-      <option value="<?= $c['id'] ?>" <?= $filter_customer==$c['id']?'selected':'' ?>><?= htmlspecialchars($c['name']) ?></option>
-    <?php endwhile; ?>
-  </select>
-  <select name="supplier_id" class="form-control" onchange="this.form.submit()">
-    <option value="">All Suppliers</option>
-    <?php $suppliers->data_seek(0); while ($s = $suppliers->fetch_assoc()): ?>
-      <option value="<?= $s['id'] ?>" <?= $filter_supplier==$s['id']?'selected':'' ?>><?= htmlspecialchars($s['name']) ?></option>
-    <?php endwhile; ?>
-  </select>
-  <select name="type" class="form-control" onchange="this.form.submit()">
-    <option value="">All Types</option>
-    <option value="send" <?= $filter_type==='send'?'selected':'' ?>>Send</option>
-    <option value="return" <?= $filter_type==='return'?'selected':'' ?>>Return</option>
-  </select>
-  <a href="delivery_orders.php" class="btn btn-secondary">Clear</a>
+    <select name="customer_id" class="form-control" onchange="this.form.submit()">
+        <option value="">All Customers</option>
+        <?php $customers->data_seek(0); while ($c = $customers->fetch_assoc()): ?>
+        <option value="<?= $c['id'] ?>" <?= $filter_customer==$c['id']?'selected':'' ?>>
+            <?= htmlspecialchars($c['name']) ?></option>
+        <?php endwhile; ?>
+    </select>
+    <select name="supplier_id" class="form-control" onchange="this.form.submit()">
+        <option value="">All Suppliers</option>
+        <?php $suppliers->data_seek(0); while ($s = $suppliers->fetch_assoc()): ?>
+        <option value="<?= $s['id'] ?>" <?= $filter_supplier==$s['id']?'selected':'' ?>>
+            <?= htmlspecialchars($s['name']) ?></option>
+        <?php endwhile; ?>
+    </select>
+    <select name="type" class="form-control" onchange="this.form.submit()">
+        <option value="">All Types</option>
+        <option value="send" <?= $filter_type==='send'?'selected':'' ?>>Send</option>
+        <option value="return" <?= $filter_type==='return'?'selected':'' ?>>Return</option>
+    </select>
+    <a href="delivery_orders.php" class="btn btn-secondary">Clear</a>
 </form>
 
 <div class="card">
-  <div class="tbl-wrap">
-    <table>
-      <thead><tr>
-        <th>S#</th><th>Date</th><th>Supplier</th><th>Customer</th><th>Description</th>
-        <th>Qty</th><th>Rate</th><th>Debit</th><th>Type</th><th>Actions</th>
-      </tr></thead>
-      <tbody>
-      <?php $i=1; while ($row = $orders->fetch_assoc()): ?>
-        <tr>
-          <td><?= $i++ ?></td>
-          <td><?= date('d/m/Y', strtotime($row['do_date'])) ?></td>
-          <td><?= htmlspecialchars($row['supplier_name'] ?? '—') ?></td>
-          <td><?= htmlspecialchars($row['customer_name'] ?? '—') ?></td>
-          <td><?= strip_tags($row['description'] ?? $row['contract_desc'] ?? '—') ?></td>
-          <td class="td-num"><?= number_format(($row['type']==='return' ? -$row['qty'] : $row['qty']), 2) ?></td>
-          <td class="td-num"><?= number_format($row['rate'], 2) ?></td>
-          <td class="td-num"><?= number_format(($row['type']==='return' ? -$row['debit'] : $row['debit']), 2) ?></td>
-          <td><span class="badge badge-<?= $row['type'] ?>"><?= $row['type'] ?></span></td>
-          <td>
-            <form method="POST" style="display:inline" onsubmit="return confirm('Delete?')">
-              <input type="hidden" name="action" value="delete">
-              <input type="hidden" name="id" value="<?= $row['id'] ?>">
-              <button type="submit" class="btn btn-danger btn-sm">Del</button>
-            </form>
-          </td>
-        </tr>
-      <?php endwhile; ?>
-      </tbody>
-      <tfoot>
-        <tr class="totals-row">
-          <td colspan="5"><strong>TOTALS</strong></td>
-          <td class="td-num"><strong><?= number_format($totals['tqty'] ?? 0, 2) ?></strong></td>
-          <td></td>
-          <td class="td-num"><strong><?= number_format($totals['tdebit'] ?? 0, 2) ?></strong></td>
-          <td colspan="2"></td>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
+    <div class="tbl-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>S#</th>
+                    <th>Date</th>
+                    <th>Supplier</th>
+                    <th>Customer</th>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Rate</th>
+                    <th>Debit</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $i = $offset + 1; while ($row = $orders->fetch_assoc()): ?>
+                <tr>
+                    <td><?= $i++ ?></td>
+                    <td><?= date('d/m/Y', strtotime($row['do_date'])) ?></td>
+                    <td><?= htmlspecialchars($row['supplier_name'] ?? '—') ?></td>
+                    <td><?= htmlspecialchars($row['customer_name'] ?? '—') ?></td>
+                    <td><?= strip_tags($row['description'] ?? $row['contract_desc'] ?? '—') ?></td>
+                    <td class="td-num"><?= number_format(($row['type']==='return' ? -$row['qty'] : $row['qty']), 2) ?>
+                    </td>
+                    <td class="td-num"><?= number_format($row['rate'], 2) ?></td>
+                    <td class="td-num">
+                        <?= number_format(($row['type']==='return' ? -$row['debit'] : $row['debit']), 2) ?></td>
+                    <td><span class="badge badge-<?= $row['type'] ?>"><?= $row['type'] ?></span></td>
+                    <td>
+                        <form method="POST" style="display:inline" onsubmit="return confirm('Delete?')">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+                        </form>
+                    </td>
+                </tr>
+                <?php endwhile; ?>
+            </tbody>
+            <tfoot>
+                <tr class="totals-row">
+                    <td colspan="5"><strong>TOTALS</strong></td>
+                    <td class="td-num"><strong><?= number_format($totals['tqty'] ?? 0, 2) ?></strong></td>
+                    <td></td>
+                    <td class="td-num"><strong><?= number_format($totals['tdebit'] ?? 0, 2) ?></strong></td>
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <?php if ($total_pages > 1): ?>
+    <div class="pagination">
+        <span class="pagination-info">
+            Showing <?= $offset + 1 ?>–<?= min($offset + $records_per_page, $total_records) ?> of <?= $total_records ?>
+            orders
+        </span>
+        <div class="pagination-links">
+            <?php if ($page > 1): ?>
+            <a href="?<?= $filter_prefix ?>page=1" class="btn btn-sm btn-secondary">«</a>
+            <a href="?<?= $filter_prefix ?>page=<?= $page - 1 ?>" class="btn btn-sm btn-secondary">‹ Prev</a>
+            <?php endif; ?>
+
+            <?php
+        $range = 2;
+        $start = max(1, $page - $range);
+        $end   = min($total_pages, $page + $range);
+        if ($start > 1): ?><span class="pg-ellipsis">…</span><?php endif;
+        for ($i = $start; $i <= $end; $i++): ?>
+            <a href="?<?= $filter_prefix ?>page=<?= $i ?>"
+                class="btn btn-sm <?= $i === $page ? 'btn-primary' : 'btn-secondary' ?>"><?= $i ?></a>
+            <?php endfor;
+        if ($end < $total_pages): ?><span class="pg-ellipsis">…</span><?php endif;
+      ?>
+
+            <?php if ($page < $total_pages): ?>
+            <a href="?<?= $filter_prefix ?>page=<?= $page + 1 ?>" class="btn btn-sm btn-secondary">Next ›</a>
+            <a href="?<?= $filter_prefix ?>page=<?= $total_pages ?>" class="btn btn-sm btn-secondary">»</a>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 
 <!-- Add Modal -->
 <div class="modal-overlay" id="addModal">
-  <div class="modal" style="max-width:680px">
-    <div class="modal-header">
-      <div class="modal-title">New Delivery Order</div>
-      <button class="modal-close" onclick="closeModal('addModal')">✕</button>
-    </div>
-    <form method="POST">
-      <input type="hidden" name="action" value="add">
-      <div class="modal-body">
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">Date *</label>
-            <input type="date" name="do_date" class="form-control" required value="<?= date('Y-m-d') ?>">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Type *</label>
-            <select name="type" class="form-control">
-              <option value="send">Send</option>
-              <option value="return">Return</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Supplier</label>
-            <select name="supplier_id" class="form-control">
-              <option value="">— None —</option>
-              <?php $suppliers->data_seek(0); while ($s = $suppliers->fetch_assoc()): ?>
-                <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></option>
-              <?php endwhile; ?>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Customer</label>
-            <select name="customer_id" class="form-control">
-              <option value="">— None —</option>
-              <?php $customers->data_seek(0); while ($c = $customers->fetch_assoc()): ?>
-                <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name']) ?></option>
-              <?php endwhile; ?>
-            </select>
-          </div>
-          <div class="form-group" style="grid-column:1/-1">
-            <label class="form-label">Link Contract (optional)</label>
-            <select name="contract_id" class="form-control" id="contract_select" onchange="fillFromContract(this)">
-              <option value="">— Select Contract —</option>
-              <?php $contracts->data_seek(0); while ($ct = $contracts->fetch_assoc()): ?>
-                <?php 
+    <div class="modal" style="max-width:680px">
+        <div class="modal-header">
+            <div class="modal-title">New Delivery Order</div>
+            <button class="modal-close" onclick="closeModal('addModal')">✕</button>
+        </div>
+        <form method="POST">
+            <input type="hidden" name="action" value="add">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Date *</label>
+                        <input type="date" name="do_date" class="form-control" required value="<?= date('Y-m-d') ?>">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type *</label>
+                        <select name="type" class="form-control">
+                            <option value="send">Send</option>
+                            <option value="return">Return</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Supplier</label>
+                        <select name="supplier_id" class="form-control">
+                            <option value="">— None —</option>
+                            <?php $suppliers->data_seek(0); while ($s = $suppliers->fetch_assoc()): ?>
+                            <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Customer</label>
+                        <select name="customer_id" class="form-control">
+                            <option value="">— None —</option>
+                            <?php $customers->data_seek(0); while ($c = $customers->fetch_assoc()): ?>
+                            <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name']) ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column:1/-1">
+                        <label class="form-label">Link Contract (optional)</label>
+                        <select name="contract_id" class="form-control" id="contract_select"
+                            onchange="fillFromContract(this)">
+                            <option value="">— Select Contract —</option>
+                            <?php $contracts->data_seek(0); while ($ct = $contracts->fetch_assoc()): ?>
+                            <?php 
                   $label = date('d/m/Y', strtotime($ct['contract_date'])) . ' | ' .
                            ($ct['supplier_name'] ?: '—') . ' | ' .
                            ($ct['customer_name'] ?: '—') . ' | ' .
@@ -190,50 +287,53 @@ require_once '../includes/header.php';
                            ($ct['qty_unit'] ?: 'METER') . ' | Rs ' .
                            (float)$ct['rate'];
                 ?>
-                <option value="<?= $ct['id'] ?>" data-qty="<?= $ct['qty'] ?>" data-rate="<?= $ct['rate'] ?>" data-desc="<?= htmlspecialchars(strip_tags($ct['description'] ?? '')) ?>">
-                  Contract #<?= $ct['id'] ?> - <?= htmlspecialchars($label) ?>
-                </option>
-              <?php endwhile; ?>
-            </select>
-          </div>
-          <div class="form-group" style="grid-column:1/-1">
-            <label class="form-label">Description *</label>
-            <textarea name="description" id="do_desc" class="form-control rich-editor" placeholder="e.g. 60x40/90x70 46"></textarea>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Quantity *</label>
-            <input type="number" name="qty" id="qty" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Rate (PKR) *</label>
-            <input type="number" name="rate" id="rate" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Debit (auto)</label>
-            <div id="debit_preview" style="padding:0.6rem 0.8rem; background:var(--cream); border:1px solid var(--border); font-size:0.8rem; color:var(--bronze);">PKR 0.00</div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Order</button>
-      </div>
-    </form>
-  </div>
+                            <option value="<?= $ct['id'] ?>" data-qty="<?= $ct['qty'] ?>" data-rate="<?= $ct['rate'] ?>"
+                                data-desc="<?= htmlspecialchars(strip_tags($ct['description'] ?? '')) ?>">
+                                Contract #<?= $ct['id'] ?> - <?= htmlspecialchars($label) ?>
+                            </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column:1/-1">
+                        <label class="form-label">Description *</label>
+                        <textarea name="description" id="do_desc" class="form-control rich-editor"
+                            placeholder="e.g. 60x40/90x70 46"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Quantity *</label>
+                        <input type="number" name="qty" id="qty" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rate (PKR) *</label>
+                        <input type="number" name="rate" id="rate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Debit (auto)</label>
+                        <div id="debit_preview"
+                            style="padding:0.6rem 0.8rem; background:var(--cream); border:1px solid var(--border); font-size:0.8rem; color:var(--bronze);">
+                            PKR 0.00</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Order</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
 function fillFromContract(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  if (!opt.value) return;
-  if ($('#do_desc').length) {
-    $('#do_desc').summernote('code', opt.dataset.desc || '');
-  } else {
-    document.getElementById('do_desc').value = opt.dataset.desc || '';
-  }
-  document.getElementById('rate').value = opt.dataset.rate;
-  // trigger debit calc
-  document.getElementById('rate').dispatchEvent(new Event('input'));
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt.value) return;
+    if ($('#do_desc').length) {
+        $('#do_desc').summernote('code', opt.dataset.desc || '');
+    } else {
+        document.getElementById('do_desc').value = opt.dataset.desc || '';
+    }
+    document.getElementById('rate').value = opt.dataset.rate;
+    document.getElementById('rate').dispatchEvent(new Event('input'));
 }
 </script>
 

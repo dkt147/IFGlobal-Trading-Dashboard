@@ -105,80 +105,87 @@ require_once '../includes/header.php';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <div class="page-header">
-  <h1>Ledger</h1>
-  <?php if ($party_name): ?>
-    <span style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:var(--clay);"><?= htmlspecialchars($party_name) ?></span>
-  <?php endif; ?>
+    <h1>Ledger</h1>
+    <?php if ($party_name): ?>
+    <span
+        style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:var(--clay);"><?= htmlspecialchars($party_name) ?></span>
+    <?php endif; ?>
 </div>
 
 <form method="GET" class="filter-row" style="margin-bottom:1.5rem">
-  <div style="font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--ash); align-self:center;">View Ledger For:</div>
-  <select name="customer_id" class="form-control" style="min-width:220px" onchange="this.form.submit()">
-    <option value="">— Customer —</option>
-    <?php $customers->data_seek(0); while ($c = $customers->fetch_assoc()): ?>
-      <option value="<?= $c['id'] ?>" <?= $filter_customer==$c['id']?'selected':'' ?>><?= htmlspecialchars($c['name']) ?></option>
-    <?php endwhile; ?>
-  </select>
-  <div style="font-size:0.65rem; color:var(--ash); align-self:center;">+</div>
-  <select name="supplier_id" class="form-control" style="min-width:220px" onchange="this.form.submit()">
-    <option value="">— Supplier —</option>
-    <?php $suppliers->data_seek(0); while ($s = $suppliers->fetch_assoc()): ?>
-      <option value="<?= $s['id'] ?>" <?= $filter_supplier==$s['id']?'selected':'' ?>><?= htmlspecialchars($s['name']) ?></option>
-    <?php endwhile; ?>
-  </select>
-  <a href="ledger.php" class="btn btn-secondary">Clear</a>
+    <div
+        style="font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--ash); align-self:center;">
+        View Ledger For:</div>
+    <select name="customer_id" class="form-control" style="min-width:220px" onchange="this.form.submit()">
+        <option value="">— Customer —</option>
+        <?php $customers->data_seek(0); while ($c = $customers->fetch_assoc()): ?>
+        <option value="<?= $c['id'] ?>" <?= $filter_customer==$c['id']?'selected':'' ?>>
+            <?= htmlspecialchars($c['name']) ?></option>
+        <?php endwhile; ?>
+    </select>
+    <div style="font-size:0.65rem; color:var(--ash); align-self:center;">+</div>
+    <select name="supplier_id" class="form-control" style="min-width:220px" onchange="this.form.submit()">
+        <option value="">— Supplier —</option>
+        <?php $suppliers->data_seek(0); while ($s = $suppliers->fetch_assoc()): ?>
+        <option value="<?= $s['id'] ?>" <?= $filter_supplier==$s['id']?'selected':'' ?>>
+            <?= htmlspecialchars($s['name']) ?></option>
+        <?php endwhile; ?>
+    </select>
+    <a href="ledger.php" class="btn btn-secondary">Clear</a>
 </form>
 
 <?php if (($filter_customer || $filter_supplier) && !($filter_customer && $filter_supplier)): ?>
 <div class="no-data">
-  Select both a customer and a supplier to view their mutual contracts and ledger.
+    Select both a customer and a supplier to view their mutual contracts and ledger.
 </div>
 <?php endif; ?>
 
 <?php if ($filter_customer && $filter_supplier): ?>
 
 <div class="card" id="ledger-preview">
-  <div class="card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
-    <div>
-      <div class="card-title"><?= htmlspecialchars($party_name) ?> — Account Statement</div>
-      <div style="font-size:0.65rem; color:var(--ash); letter-spacing:0.1em;">100% Cotton · METER</div>
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <div class="card-title"><?= htmlspecialchars($party_name) ?> — Account Statement</div>
+            <div style="font-size:0.65rem; color:var(--ash); letter-spacing:0.1em;">100% Cotton · METER</div>
+        </div>
+        <button class="btn btn-pdf" onclick="printLedger()">⬇ Download PDF</button>
     </div>
-    <button class="btn btn-pdf" onclick="printLedger()">⬇ Download PDF</button>
-  </div>
-  <div class="card-body">
-    <?php if (!empty($contracts_data)): ?>
-      <div class="tbl-wrap" style="margin-bottom:1.5rem;">
-        <table>
-          <thead><tr>
-            <th>S#</th>
-            <th>Date</th>
-            <th>Supplier</th>
-            <th>Customer</th>
-            <th>Description</th>
-            <th>Qty</th>
-            <th>Rate</th>
-            <th>Debit</th>
-            <th>Commission</th>
-          </tr></thead>
-          <tbody>
-          <?php $sn=1; foreach ($contracts_data as $contract): ?>
-            <tr>
-              <td><?= $sn++ ?></td>
-              <td><?= date('d/m/Y', strtotime($contract['contract_date'])) ?></td>
-              <td><?php
+    <div class="card-body">
+        <?php if (!empty($contracts_data)): ?>
+        <div class="tbl-wrap" style="margin-bottom:1.5rem;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>S#</th>
+                        <th>Date</th>
+                        <th>Supplier</th>
+                        <th>Customer</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Rate</th>
+                        <th>Debit</th>
+                        <th>Commission</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $sn=1; foreach ($contracts_data as $contract): ?>
+                    <tr>
+                        <td><?= $sn++ ?></td>
+                        <td><?= date('d/m/Y', strtotime($contract['contract_date'])) ?></td>
+                        <td><?php
                 $supp = $conn->query("SELECT name FROM suppliers WHERE id={$contract['supplier_id']}")->fetch_assoc();
                 echo htmlspecialchars($supp['name'] ?? '—');
               ?></td>
-              <td><?php
+                        <td><?php
                 $cust = $conn->query("SELECT name FROM customers WHERE id={$contract['customer_id']}")->fetch_assoc();
                 echo htmlspecialchars($cust['name'] ?? '—');
               ?></td>
-              <td><?= strip_tags($contract['description'] ?? '') ?></td>
-              <td class="td-num"><?= number_format($contract['qty'], 2) ?></td>
-              <td class="td-num"><?= number_format($contract['rate'], 2) ?></td>
-              <td class="td-num"><?= number_format($contract['debit'], 2) ?></td>
-              <td class="td-num">
-                <?php
+                        <td><?= strip_tags($contract['description'] ?? '') ?></td>
+                        <td class="td-num"><?= number_format($contract['qty'], 2) ?></td>
+                        <td class="td-num"><?= number_format($contract['rate'], 2) ?></td>
+                        <td class="td-num"><?= number_format($contract['debit'], 2) ?></td>
+                        <td class="td-num">
+                            <?php
                   $comm = 0;
                   if ($contract['commission_type'] === 'percentage') {
                       $comm = $contract['debit'] * ($contract['commission_value'] / 100);
@@ -188,216 +195,276 @@ require_once '../includes/header.php';
                       echo number_format($comm, 2) . ' (' . $contract['commission_value'] . '/unit)';
                   }
                 ?>
-              </td>
-            </tr>
-          <?php endforeach; ?>
-          </tbody>
-        </table>
-      </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php endif; ?>
+
+        <div class="tbl-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>S#</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Rate</th>
+                        <th>Debit</th>
+                        <th>Credit</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $sn=1; foreach ($rows as $row): ?>
+                    <tr>
+                        <td><?= $row['entry_type']==='DO' ? $sn++ : '' ?></td>
+                        <td><?= date('d/m/Y', strtotime($row['entry_date'])) ?></td>
+                        <td>
+                            <?php if ($row['entry_type'] === 'DO'): ?>
+                            <?= strip_tags($row['description'] ?? '') ?>
+                            <?php if ($row['sub_type']==='return'): ?>
+                            <span class="badge badge-return" style="margin-left:4px">Return</span>
+                            <?php endif; ?>
+                            <?php else: ?>
+                            <span
+                                style="color:var(--success); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase;">
+                                <?= $row['sub_type']==='return' ? 'PAYMENT RETURN' : 'PAYMENT' ?>
+                            </span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="td-num"><?= $row['qty'] ? number_format($row['qty'],2) : '' ?></td>
+                        <td class="td-num"><?= $row['rate'] ? number_format($row['rate'],2) : '' ?></td>
+                        <td class="td-num <?= $row['debit_amt']>0 ? 'ledger-debit' : '' ?>">
+                            <?= $row['debit_amt'] ? number_format($row['debit_amt'],2) : '' ?>
+                        </td>
+                        <td class="td-num <?= $row['credit_amt']>0 ? 'ledger-credit' : '' ?>">
+                            <?= $row['credit_amt'] ? number_format($row['credit_amt'],2) : '' ?>
+                        </td>
+                        <td class="td-num ledger-bal"><?= number_format($row['balance'],2) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+                <tfoot>
+                    <tr class="totals-row">
+                        <td colspan="3"><strong>TOTAL</strong></td>
+                        <td class="td-num"><strong><?= number_format($total_qty,2) ?></strong></td>
+                        <td></td>
+                        <td class="td-num"><strong><?= number_format($total_debit,2) ?></strong></td>
+                        <td class="td-num"><strong><?= number_format($total_credit,2) ?></strong></td>
+                        <td class="td-num" style="color:<?= $balance>=0?'var(--danger)':'var(--success)' ?>">
+                            <strong><?= number_format(abs($balance),2) ?> <?= $balance>=0 ? 'DR' : 'CR' ?></strong>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <?php elseif (!($filter_customer || $filter_supplier)): ?>
+    <div class="no-data">
+        ↑ Select both a customer and a supplier above to view their mutual ledger
+    </div>
     <?php endif; ?>
 
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr>
-          <th>S#</th>
-          <th>Date</th>
-          <th>Description</th>
-          <th>Qty</th>
-          <th>Rate</th>
-          <th>Debit</th>
-          <th>Credit</th>
-          <th>Balance</th>
-        </tr></thead>
-        <tbody>
-        <?php $sn=1; foreach ($rows as $row): ?>
-        <tr>
-          <td><?= $row['entry_type']==='DO' ? $sn++ : '' ?></td>
-          <td><?= date('d/m/Y', strtotime($row['entry_date'])) ?></td>
-          <td>
-            <?php if ($row['entry_type'] === 'DO'): ?>
-              <?= strip_tags($row['description'] ?? '') ?>
-              <?php if ($row['sub_type']==='return'): ?>
-                <span class="badge badge-return" style="margin-left:4px">Return</span>
-              <?php endif; ?>
-            <?php else: ?>
-              <span style="color:var(--success); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase;">
-                <?= $row['sub_type']==='return' ? 'PAYMENT RETURN' : 'PAYMENT' ?>
-              </span>
-            <?php endif; ?>
-          </td>
-          <td class="td-num"><?= $row['qty'] ? number_format($row['qty'],2) : '' ?></td>
-          <td class="td-num"><?= $row['rate'] ? number_format($row['rate'],2) : '' ?></td>
-          <td class="td-num <?= $row['debit_amt']>0 ? 'ledger-debit' : '' ?>">
-            <?= $row['debit_amt'] ? number_format($row['debit_amt'],2) : '' ?>
-          </td>
-          <td class="td-num <?= $row['credit_amt']>0 ? 'ledger-credit' : '' ?>">
-            <?= $row['credit_amt'] ? number_format($row['credit_amt'],2) : '' ?>
-          </td>
-          <td class="td-num ledger-bal"><?= number_format($row['balance'],2) ?></td>
-        </tr>
-      <?php endforeach; ?>
-      </tbody>
-      <tfoot>
-        <tr class="totals-row">
-          <td colspan="3"><strong>TOTAL</strong></td>
-          <td class="td-num"><strong><?= number_format($total_qty,2) ?></strong></td>
-          <td></td>
-          <td class="td-num"><strong><?= number_format($total_debit,2) ?></strong></td>
-          <td class="td-num"><strong><?= number_format($total_credit,2) ?></strong></td>
-          <td class="td-num" style="color:<?= $balance>=0?'var(--danger)':'var(--success)' ?>">
-            <strong><?= number_format(abs($balance),2) ?> <?= $balance>=0 ? 'DR' : 'CR' ?></strong>
-          </td>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
-</div>
+    <?php if ($filter_customer && $filter_supplier): ?>
+    <div id="ledger-pdf-content" style="display:none;">
+        <div style="background:white; padding:2.5rem; font-family:'DM Mono',monospace; max-width:800px;">
 
-<?php elseif (!($filter_customer || $filter_supplier)): ?>
-<div class="no-data">
-  ↑ Select both a customer and a supplier above to view their mutual ledger
-</div>
-<?php endif; ?>
+            <!-- Header -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2rem;">
+                <div>
+                    <div
+                        style="font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:600; color:#2C2A26; margin-bottom:0.3rem;">
+                        <?= htmlspecialchars($owner['company_name']) ?>
+                    </div>
+                    <div style="font-size:0.72rem; color:#6B6560; letter-spacing:0.08em;">
+                        <?= htmlspecialchars($owner['city']) ?></div>
+                </div>
+                <div style="text-align:right">
+                    <div
+                        style="font-size:0.6rem; letter-spacing:0.25em; text-transform:uppercase; color:#9C7A4A; margin-bottom:0.5rem;">
+                        Account Statement</div>
+                    <div style="font-size:0.72rem; color:#6B6560;">DATE: <strong
+                            style="color:#2C2A26"><?= date('d-m-Y') ?></strong></div>
+                    <div style="font-size:0.72rem; color:#6B6560;">PARTY: <strong
+                            style="color:#2C2A26"><?= htmlspecialchars($party_name) ?></strong></div>
+                </div>
+            </div>
 
-<?php if ($filter_customer && $filter_supplier): ?>
-<div id="ledger-pdf-content" style="display:none;">
-<div style="background:white; padding:2.5rem; font-family:'DM Mono',monospace; max-width:800px;">
+            <!-- Divider -->
+            <div style="height:2px; background:linear-gradient(90deg, #C5A882, transparent); margin-bottom:1.5rem;">
+            </div>
 
-  <!-- Header -->
-  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2rem;">
-    <div>
-      <div style="font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:600; color:#2C2A26; margin-bottom:0.3rem;">
-        <?= htmlspecialchars($owner['company_name']) ?>
-      </div>
-      <div style="font-size:0.72rem; color:#6B6560; letter-spacing:0.08em;"><?= htmlspecialchars($owner['city']) ?></div>
-    </div>
-    <div style="text-align:right">
-      <div style="font-size:0.6rem; letter-spacing:0.25em; text-transform:uppercase; color:#9C7A4A; margin-bottom:0.5rem;">Account Statement</div>
-      <div style="font-size:0.72rem; color:#6B6560;">DATE: <strong style="color:#2C2A26"><?= date('d-m-Y') ?></strong></div>
-      <div style="font-size:0.72rem; color:#6B6560;">PARTY: <strong style="color:#2C2A26"><?= htmlspecialchars($party_name) ?></strong></div>
-    </div>
-  </div>
-
-  <!-- Divider -->
-  <div style="height:2px; background:linear-gradient(90deg, #C5A882, transparent); margin-bottom:1.5rem;"></div>
-
-  <?php if (!empty($contracts_data)): ?>
-  <div style="margin-bottom:1.5rem;">
-    <div style="font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:600; color:#2C2A26; margin-bottom:0.75rem;">Contracts</div>
-    <table style="width:100%; border-collapse:collapse; font-size:0.72rem; margin-bottom:1rem;">
-      <thead>
-        <tr style="background:#EDE8DF; border-bottom:1px solid rgba(197,168,130,0.4);">
-          <th style="padding:0.55rem 0.7rem; text-align:left; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">Date</th>
-          <th style="padding:0.55rem 0.7rem; text-align:left; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">Description</th>
-          <th style="padding:0.55rem 0.7rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">Qty</th>
-          <th style="padding:0.55rem 0.7rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">Rate</th>
-          <th style="padding:0.55rem 0.7rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">Debit</th>
-          <th style="padding:0.55rem 0.7rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">Commission</th>
-        </tr>
-      </thead>
-      <tbody>
-      <?php foreach ($contracts_data as $contract): ?>
-        <tr style="border-bottom:1px solid rgba(197,168,130,0.15);">
-          <td style="padding:0.55rem 0.7rem;"><?= date('d/m/Y', strtotime($contract['contract_date'])) ?></td>
-          <td style="padding:0.55rem 0.7rem;"><?= strip_tags($contract['description'] ?? '') ?></td>
-          <td style="padding:0.55rem 0.7rem; text-align:right;"><?= number_format($contract['qty'],2) ?></td>
-          <td style="padding:0.55rem 0.7rem; text-align:right;"><?= number_format($contract['rate'],2) ?></td>
-          <td style="padding:0.55rem 0.7rem; text-align:right;"><?= number_format($contract['debit'],2) ?></td>
-          <td style="padding:0.55rem 0.7rem; text-align:right;">
-            <?php
+            <?php if (!empty($contracts_data)): ?>
+            <div style="margin-bottom:1.5rem;">
+                <div
+                    style="font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:600; color:#2C2A26; margin-bottom:0.75rem;">
+                    Contracts</div>
+                <table style="width:100%; border-collapse:collapse; font-size:0.72rem; margin-bottom:1rem;">
+                    <thead>
+                        <tr style="background:#EDE8DF; border-bottom:1px solid rgba(197,168,130,0.4);">
+                            <th
+                                style="padding:0.55rem 0.7rem; text-align:left; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">
+                                Date</th>
+                            <th
+                                style="padding:0.55rem 0.7rem; text-align:left; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">
+                                Description</th>
+                            <th
+                                style="padding:0.55rem 0.7rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">
+                                Qty</th>
+                            <th
+                                style="padding:0.55rem 0.7rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">
+                                Rate</th>
+                            <th
+                                style="padding:0.55rem 0.7rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">
+                                Debit</th>
+                            <th
+                                style="padding:0.55rem 0.7rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">
+                                Commission</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($contracts_data as $contract): ?>
+                        <tr style="border-bottom:1px solid rgba(197,168,130,0.15);">
+                            <td style="padding:0.55rem 0.7rem;">
+                                <?= date('d/m/Y', strtotime($contract['contract_date'])) ?></td>
+                            <td style="padding:0.55rem 0.7rem;"><?= strip_tags($contract['description'] ?? '') ?></td>
+                            <td style="padding:0.55rem 0.7rem; text-align:right;">
+                                <?= number_format($contract['qty'],2) ?></td>
+                            <td style="padding:0.55rem 0.7rem; text-align:right;">
+                                <?= number_format($contract['rate'],2) ?></td>
+                            <td style="padding:0.55rem 0.7rem; text-align:right;">
+                                <?= number_format($contract['debit'],2) ?></td>
+                            <td style="padding:0.55rem 0.7rem; text-align:right;">
+                                <?php
               if ($contract['commission_type'] === 'percentage') {
                   echo number_format($contract['debit'] * ($contract['commission_value'] / 100), 2) . ' (' . $contract['commission_value'] . '%)';
               } else {
                   echo number_format($contract['qty'] * $contract['commission_value'], 2) . ' (' . $contract['commission_value'] . '/unit)';
               }
             ?>
-          </td>
-        </tr>
-      <?php endforeach; ?>
-      </tbody>
-    </table>
-  </div>
-  <?php endif; ?>
-
-  <!-- Table -->
-  <table style="width:100%; border-collapse:collapse; font-size:0.72rem; margin-bottom:1.5rem;">
-    <thead>
-      <tr style="background:#EDE8DF; border-bottom:1px solid rgba(197,168,130,0.4);">
-        <th style="padding:0.6rem 0.8rem; text-align:left; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">Date</th>
-        <th style="padding:0.6rem 0.8rem; text-align:left; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">Description</th>
-        <th style="padding:0.6rem 0.8rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">Qty</th>
-        <th style="padding:0.6rem 0.8rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">Debit</th>
-        <th style="padding:0.6rem 0.8rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">Credit</th>
-        <th style="padding:0.6rem 0.8rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">Balance</th>
-      </tr>
-    </thead>
-    <tbody>
-    <?php $sn=1; foreach ($rows as $row): ?>
-      <tr style="border-bottom:1px solid rgba(197,168,130,0.15);">
-        <td style="padding:0.6rem 0.8rem;"><?= date('d/m/Y', strtotime($row['entry_date'])) ?></td>
-        <td style="padding:0.6rem 0.8rem;">
-          <?php if ($row['entry_type'] === 'DO'): ?>
-            <?= strip_tags($row['description'] ?? '') ?>
-            <?php if ($row['sub_type']==='return'): ?>
-              <span style="color:#9C7A4A; font-size:0.6rem;"> (Return)</span>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
             <?php endif; ?>
-          <?php else: ?>
-            <span style="color:#4CAF50; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase;">
-              <?= $row['sub_type']==='return' ? 'PAYMENT RETURN' : 'PAYMENT' ?>
-            </span>
-          <?php endif; ?>
-        </td>
-        <td style="padding:0.6rem 0.8rem; text-align:right;"><?= $row['qty'] ? number_format($row['qty'],2) : '' ?></td>
-        <td style="padding:0.6rem 0.8rem; text-align:right; color:#F44336;"><?= $row['debit_amt'] ? number_format($row['debit_amt'],2) : '' ?></td>
-        <td style="padding:0.6rem 0.8rem; text-align:right; color:#4CAF50;"><?= $row['credit_amt'] ? number_format($row['credit_amt'],2) : '' ?></td>
-        <td style="padding:0.6rem 0.8rem; text-align:right; font-weight:500;"><?= number_format($row['balance'],2) ?></td>
-      </tr>
-    <?php endforeach; ?>
-    </tbody>
-  </table>
 
-  <!-- Totals -->
-  <div style="display:flex; justify-content:flex-end; margin-bottom:2rem;">
-    <div style="min-width:300px;">
-      <div style="display:flex; justify-content:space-between; padding:0.4rem 0; font-size:0.72rem; border-bottom:1px solid rgba(197,168,130,0.2);">
-        <span style="color:#6B6560;">Total Debit</span>
-        <span>PKR <?= number_format($total_debit,2) ?></span>
-      </div>
-      <div style="display:flex; justify-content:space-between; padding:0.4rem 0; font-size:0.72rem; border-bottom:1px solid rgba(197,168,130,0.2);">
-        <span style="color:#6B6560;">Total Credit</span>
-        <span>PKR <?= number_format($total_credit,2) ?></span>
-      </div>
-      <div style="display:flex; justify-content:space-between; padding:0.6rem 0; font-size:1rem; font-family:'Cormorant Garamond',serif; font-weight:600; border-top:2px solid #C5A882;">
-        <span>Balance</span>
-        <span style="color:<?= $balance>=0?'#F44336':'#4CAF50' ?>">PKR <?= number_format(abs($balance),2) ?> <?= $balance>=0 ? 'DR' : 'CR' ?></span>
-      </div>
+            <!-- Table -->
+            <table style="width:100%; border-collapse:collapse; font-size:0.72rem; margin-bottom:1.5rem;">
+                <thead>
+                    <tr style="background:#EDE8DF; border-bottom:1px solid rgba(197,168,130,0.4);">
+                        <th
+                            style="padding:0.6rem 0.8rem; text-align:left; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">
+                            Date</th>
+                        <th
+                            style="padding:0.6rem 0.8rem; text-align:left; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">
+                            Description</th>
+                        <th
+                            style="padding:0.6rem 0.8rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">
+                            Qty</th>
+                        <th
+                            style="padding:0.6rem 0.8rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">
+                            Debit</th>
+                        <th
+                            style="padding:0.6rem 0.8rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">
+                            Credit</th>
+                        <th
+                            style="padding:0.6rem 0.8rem; text-align:right; font-size:0.58rem; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:#6B6560;">
+                            Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $sn=1; foreach ($rows as $row): ?>
+                    <tr style="border-bottom:1px solid rgba(197,168,130,0.15);">
+                        <td style="padding:0.6rem 0.8rem;"><?= date('d/m/Y', strtotime($row['entry_date'])) ?></td>
+                        <td style="padding:0.6rem 0.8rem;">
+                            <?php if ($row['entry_type'] === 'DO'): ?>
+                            <?= strip_tags($row['description'] ?? '') ?>
+                            <?php if ($row['sub_type']==='return'): ?>
+                            <span style="color:#9C7A4A; font-size:0.6rem;"> (Return)</span>
+                            <?php endif; ?>
+                            <?php else: ?>
+                            <span
+                                style="color:#4CAF50; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase;">
+                                <?= $row['sub_type']==='return' ? 'PAYMENT RETURN' : 'PAYMENT' ?>
+                            </span>
+                            <?php endif; ?>
+                        </td>
+                        <td style="padding:0.6rem 0.8rem; text-align:right;">
+                            <?= $row['qty'] ? number_format($row['qty'],2) : '' ?></td>
+                        <td style="padding:0.6rem 0.8rem; text-align:right; color:#F44336;">
+                            <?= $row['debit_amt'] ? number_format($row['debit_amt'],2) : '' ?></td>
+                        <td style="padding:0.6rem 0.8rem; text-align:right; color:#4CAF50;">
+                            <?= $row['credit_amt'] ? number_format($row['credit_amt'],2) : '' ?></td>
+                        <td style="padding:0.6rem 0.8rem; text-align:right; font-weight:500;">
+                            <?= number_format($row['balance'],2) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+
+            <!-- Totals -->
+            <div style="display:flex; justify-content:flex-end; margin-bottom:2rem;">
+                <div style="min-width:300px;">
+                    <div
+                        style="display:flex; justify-content:space-between; padding:0.4rem 0; font-size:0.72rem; border-bottom:1px solid rgba(197,168,130,0.2);">
+                        <span style="color:#6B6560;">Total Debit</span>
+                        <span>PKR <?= number_format($total_debit,2) ?></span>
+                    </div>
+                    <div
+                        style="display:flex; justify-content:space-between; padding:0.4rem 0; font-size:0.72rem; border-bottom:1px solid rgba(197,168,130,0.2);">
+                        <span style="color:#6B6560;">Total Credit</span>
+                        <span>PKR <?= number_format($total_credit,2) ?></span>
+                    </div>
+                    <div
+                        style="display:flex; justify-content:space-between; padding:0.6rem 0; font-size:1rem; font-family:'Cormorant Garamond',serif; font-weight:600; border-top:2px solid #C5A882;">
+                        <span>Balance</span>
+                        <span style="color:<?= $balance>=0?'#F44336':'#4CAF50' ?>">PKR
+                            <?= number_format(abs($balance),2) ?> <?= $balance>=0 ? 'DR' : 'CR' ?></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div
+                style="font-size:0.65rem; color:#6B6560; border-top:1px solid rgba(197,168,130,0.3); padding-top:1rem; letter-spacing:0.08em;">
+                Account Statement for <?= htmlspecialchars($party_name) ?> as of <?= date('d-m-Y') ?>
+            </div>
+
+        </div>
     </div>
-  </div>
+    <?php endif; ?>
 
-  <!-- Footer -->
-  <div style="font-size:0.65rem; color:#6B6560; border-top:1px solid rgba(197,168,130,0.3); padding-top:1rem; letter-spacing:0.08em;">
-    Account Statement for <?= htmlspecialchars($party_name) ?> as of <?= date('d-m-Y') ?>
-  </div>
+    <script>
+    function printLedger() {
+        const element = document.getElementById('ledger-pdf-content');
+        element.style.display = 'block'; // Temporarily show for PDF generation
+        const opt = {
+            margin: 0.5,
+            filename: 'ledger-statement-<?= htmlspecialchars($party_name) ?>-<?= date('Y-m-d') ?>.pdf',
+            image: {
+                type: 'jpeg',
+                quality: 0.98
+            },
+            html2canvas: {
+                scale: 2,
+                useCORS: true
+            },
+            jsPDF: {
+                unit: 'in',
+                format: 'a4',
+                orientation: 'portrait'
+            }
+        };
+        html2pdf().set(opt).from(element).save().then(() => {
+            element.style.display = 'none'; // Hide again after generation
+        });
+    }
+    </script>
 
-</div>
-</div>
-<?php endif; ?>
-
-<script>
-function printLedger() {
-  const element = document.getElementById('ledger-pdf-content');
-  element.style.display = 'block'; // Temporarily show for PDF generation
-  const opt = {
-    margin: 0.5,
-    filename: 'ledger-statement-<?= htmlspecialchars($party_name) ?>-<?= date('Y-m-d') ?>.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
-  html2pdf().set(opt).from(element).save().then(() => {
-    element.style.display = 'none'; // Hide again after generation
-  });
-}
-</script>
-
-<?php require_once '../includes/footer.php'; ?>
+    <?php require_once '../includes/footer.php'; ?>
